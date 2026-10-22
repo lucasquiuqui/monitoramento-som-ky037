@@ -1,0 +1,35 @@
+# Documentacao da Entrega 1 - conforme opcoes apresentadas em aula
+PROJECT_NAME           = "Monitoramento de Som KY-037"
+PROJECT_BRIEF          = "Classe C++ de leitura do ADC da STM32MP1 - Entrega 1"
+OUTPUT_DIRECTORY       = docs
+
+# Arquivos que compoem a documentacao
+INPUT                  = DOCUMENTACAO.md SensorSom.hpp SensorSom.cpp main.cpp
+FILE_PATTERNS          = *.hpp *.cpp *.md
+RECURSIVE              = NO
+USE_MDFILE_AS_MAINPAGE = DOCUMENTACAO.md
+
+# Extracao e navegacao do codigo
+EXTRACT_ALL            = YES
+EXTRACT_PRIVATE        = YES
+EXTRACT_STATIC         = YES
+SOURCE_BROWSER         = YES
+INLINE_SOURCES         = YES
+
+# Saida
+GENERATE_HTML          = YES
+HTML_OUTPUT            = html
+GENERATE_LATEX         = NO
+
+# Diagramas e graficos (requer Graphviz/dot)
+HAVE_DOT               = YES
+UML_LOOK               = YES
+DOT_UML_DETAILS        = YES
+UML_LIMIT_NUM_FIELDS   = 50
+CALL_GRAPH             = YES
+CALLER_GRAPH           = YES
+
+# Alertas de documentacao
+QUIET                  = NO
+WARNINGS               = YES
+WARN_IF_DOC_ERROR      = YES

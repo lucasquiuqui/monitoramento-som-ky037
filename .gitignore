@@ -1,0 +1,22 @@
+# Binarios gerados
+sensor_som
+sensor_som_arm
+teste_sensor_som
+*.o
+
+# Documentacao gerada pelo Doxygen (opcional gerar de novo)
+docs/
+
+# Arquivos temporarios e de IDE
+*.swp
+.vscode/
+
+# Arquivos temporarios dos testes locais
+testar_sensor
+leitura_teste.txt
+README.md.bak
+
+# Arquivos temporarios
+testar_sensor
+leitura_teste.txt
+README.md.bak

@@ -3,7 +3,17 @@
 ## Objetivo
 Projeto da disciplina **Programacao Aplicada a Engenharia Eletrica**: ler a saida analogica do modulo de som KY-037 no Linux embarcado da STM32MP1-DK1, por meio de uma **classe C++ encapsulada e documentada com Doxygen**.
 
-> **Status desta entrega:** classe implementada e testada com arquivo simulado no Ubuntu. **Nao ha comprovacao de leitura real do KY-037 nesta versao.** A conexao eletrica definitiva aguarda validacao do professor. Nao energize o sensor ligado ao ADC sem conferir os limites de tensao.
+> **Status da Entrega 1:** Classe SensorSom implementada em C++,
+> compilada e testada no Ubuntu com dados simulados.
+> Compilacao cruzada ARM concluida e documentacao Doxygen
+> gerada com sucesso.
+>
+> O KY-037 pode ser conectado
+> diretamente ao ADC A4 da STM32MP1-DK1
+> utilizando alimentacao de 3,3 V.
+>
+> A leitura real do KY-037 na STM32 ainda nao foi validada.
+> Essa verificacao sera realizada na Entrega 2.
 
 ## Arquivos
 
@@ -123,11 +133,18 @@ SensorSom
 
 ## Limites e proximas etapas
 
-1. Aguardar confirmacao do professor sobre a ligacao analogica KY-037 A0 -> STM32 A4 e necessidade de protecao/adaptacao de tensao. **Nao testar a ligacao direta sem essa validacao.**
-2. Confirmar funcionamento do executavel ARM diretamente na STM32.
-3. Com a eletrica validada, realizar leituras reais, comparar silencio e eventos sonoros e definir processamento adequado (o numero ADC **nao representa decibeis**).
-4. Documentar no README as evidencias de teste e fotos reais da montagem com a placa desligada.
-5. Em entregas posteriores: transmissao UDP, interface grafica, historico, alertas, log CSV e apresentacao.
+
+**Entrega 1 — Concluída:** classe `SensorSom` implementada em C++, testada no Ubuntu, compilada para ARM e documentada com Doxygen.
+
+
+### Entrega 2 — Próximas atividades
+
+1. Executar o programa na STM32 e validar a leitura real do KY-037.
+2. Realizar testes com diferentes níveis de ruído.
+3. Analisar os valores obtidos pelo ADC e verificar o comportamento do sensor.
+4. Registrar os resultados e as evidências no GitHub.
+
+**Observação:** a leitura real do KY-037 ainda não foi validada. Os valores do ADC não representam diretamente decibéis (dB).
 
 ## Protocolo
 

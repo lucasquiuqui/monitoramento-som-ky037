@@ -4,7 +4,7 @@ PROJECT_BRIEF          = "Classe C++ de leitura do ADC da STM32MP1 - Entrega 1"
 OUTPUT_DIRECTORY       = docs
 
 # Arquivos que compoem a documentacao
-INPUT                  = DOCUMENTACAO.md include src
+INPUT                  = DOCUMENTACAO.md include src main.cpp
 FILE_PATTERNS          = *.hpp *.cpp *.md
 RECURSIVE              = NO
 USE_MDFILE_AS_MAINPAGE = DOCUMENTACAO.md

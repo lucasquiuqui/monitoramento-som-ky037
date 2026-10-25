@@ -1,4 +1,4 @@
-#include "../SensorSom.hpp"
+#include "../include/SensorSom.hpp"
 
 #include <cstdio>
 #include <fstream>

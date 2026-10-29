@@ -147,6 +147,40 @@ SensorSom
 
 As leituras reais também serão contagens brutas do ADC, não valores calibrados em dB.
 
+## Resultados experimentais da Entrega 2
+
+O programa foi executado na STM32MP1-DK1 com o sensor
+KY-037 conectado à entrada analógica A4.
+
+Foram realizadas 100 leituras em silêncio e 100 com ruído,
+utilizando intervalo solicitado de 100 ms.
+
+| Indicador | Silêncio | Ruído |
+|---|---:|---:|
+| Média | 4.137,13 | 5.111,61 |
+| Mediana | 4.173 | 4.408,5 |
+| Mínimo | 3.522 | 3.190 |
+| Máximo | 4.561 | 41.204 |
+
+O teste com ruído apresentou picos mais elevados.
+Esses valores representam contagens brutas do ADC,
+não níveis sonoros em decibéis.
+
+### Evidências
+
+![Gráfico das medições](evidencias/entrega2/ky037_comparacao_completa.png)
+
+![Gráfico ampliado](evidencias/entrega2/ky037_comparacao_ampliada.png)
+
+[Análise detalhada](evidencias/entrega2/ANALISE_ENTREGA2.md)
+
+### Execução na STM32
+
+Para executar o programa após transferi-lo para a placa:
+
+    chmod +x /root/sensor_som_arm
+    /root/sensor_som_arm --amostras 100 --intervalo-ms 100
+
 ## Protocolo
 
 Ainda nao implementado — pertence a entrega de comunicacao UDP.

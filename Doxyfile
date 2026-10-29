@@ -1,6 +1,6 @@
-# Documentacao da Entrega 1 - conforme opcoes apresentadas em aula
+# Documentacao das Entregas 1 e 2 - conforme opcoes apresentadas em aula
 PROJECT_NAME           = "Monitoramento de Som KY-037"
-PROJECT_BRIEF          = "Classe C++ de leitura do ADC da STM32MP1 - Entrega 1"
+PROJECT_BRIEF          = "Classes C++ de leitura e monitoramento do ADC - Entregas 1 e 2"
 OUTPUT_DIRECTORY       = docs
 
 # Arquivos que compoem a documentacao

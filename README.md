@@ -1,159 +1,95 @@
 # Sensor de Som KY-037 — STM32MP1-DK1
 
-## Objetivo e escopo da Entrega 1
+## Contexto do Projeto
 
-Projeto da disciplina **Programação Aplicada à Engenharia Elétrica**. Esta etapa implementa, em C++ orientado a objetos, uma classe encapsulada e documentada com Doxygen para ler a saída analógica do KY-037 pelo arquivo ADC do Linux IIO. O programa de exemplo executa uma leitura e mostra a contagem bruta; esse valor **não é uma medida em decibéis (dB)**.
+Projeto da disciplina **Programação Aplicada à Engenharia Elétrica** (IME / Exército Brasileiro) — *Monitoramento Inteligente de Carga*. Esta aplicação implementa o subsistema de captura acústica para detectar tentativas de violação, impacto ou movimentação de ferramentas próximo a uma carga protegida, utilizando o sensor de microfone analógico **KY-037** conectado à placa de desenvolvimento **STM32MP1-DK1**.
 
-**Estado da Entrega 1:** código e documentação preparados; compilação e testes locais verificados com dados simulados. A leitura do sensor físico na STM32MP1-DK1 será validada na Entrega 2.
+**Estado do projeto:** as Entregas 1, 2 e 3 foram implementadas e validadas. A arquitetura C++ orientada a objetos está encapsulada e documentada com Doxygen; as leituras reais do KY-037 foram comprovadas na STM32MP1-DK1 via subsistema Linux IIO; e a transmissão em tempo real via socket UDP foi demonstrada com recepção no computador servidor.
 
-## Estrutura do projeto
+---
 
-- `include/SensorSom.hpp`: declaração da classe, atributos privados, métodos públicos e comentários Doxygen.
-- `src/SensorSom.cpp`: leitura de arquivo Linux IIO, tratamento de erros e armazenamento da última leitura válida.
-- `main.cpp`: aplicacao minima que utiliza a classe; toda a logica fica encapsulada em classes.
-- `testes/teste_sensor_som.cpp`: teste local com arquivo simulado e tratamento de entrada invalida.
-- `dados/leitura_exemplo.txt`: valor ficticio `88` usado somente no teste.
-- `Doxyfile`: configuracao do gerador Doxygen, incluindo membros privados, navegador de codigo e diagramas Graphviz.
-- `DOCUMENTACAO.md`: pagina inicial da documentacao gerada.
+## Estrutura do Projeto
 
-### Classes e métodos
+- `include/SensorSom.hpp`: declaração da classe de leitura do ADC via Linux IIO, atributos privados e documentação Doxygen.
+- `src/SensorSom.cpp`: abertura, leitura e validação do arquivo sysfs do Linux IIO.
+- `include/MonitoramentoSom.hpp` e `src/MonitoramentoSom.cpp`: gerenciamento do laço de amostragem temporal contínuo ou amostrado, integrando a transmissão UDP.
+- `include/ClienteUDP.hpp` e `src/ClienteUDP.cpp`: encapsulamento do socket UDP POSIX com RAII, gerenciamento de descritores e envio de datagramas sem variáveis globais.
+- `include/ProtocoloSom.hpp` e `src/ProtocoloSom.cpp`: serialização de pacotes de telemetria nos formatos JSON (padrão) e CSV.
+- `main.cpp`: interface de linha de comando (`AplicacaoSensorSom`) para configuração de parâmetros e execução.
+- `servidor_udp.py`: servidor receptor no computador implementado em orientação a objetos (`ServidorReceptorUDP`).
+- `testes/teste_sensor_som.cpp`: testes unitários da classe `SensorSom` com dados simulados.
+- `testes/teste_monitoramento_som.cpp`: testes unitários do laço de amostragem temporal.
+- `testes/teste_protocolo_udp.cpp`: testes automatizados de serialização e transmissão/recepção UDP em loopback (`127.0.0.1`).
+- `dados/leitura_exemplo.txt`: leitura fictícia (`88`) utilizada para validação e testes locais sem hardware.
+- `Doxyfile`: configuração de geração da documentação técnica e diagramas Graphviz.
+- `DOCUMENTACAO.md`: página inicial da documentação técnica Doxygen.
+- `evidencias/`: registros fotográficos e capturas de terminal das validações práticas de cada entrega.
 
-- `SensorSom`: recebe o caminho do arquivo ADC no construtor. `lerBruto()` abre o arquivo, valida um inteiro não negativo e guarda a última leitura válida. `possuiLeitura()`, `obterUltimaLeitura()` e `obterCaminhoAdc()` consultam o estado sem expor os atributos privados.
-- `AplicacaoSensorSom` (em `main.cpp`): escolhe o arquivo ADC, usa `SensorSom` para fazer uma leitura, imprime o resultado e informa erros de execução.
-- `TesteSensorSom` (em `testes/teste_sensor_som.cpp`): verifica leitura simulada, estado inicial e preservação da última leitura quando a entrada é inválida.
-
-Não há variáveis globais; a lógica da aplicação e dos testes está encapsulada nas classes.
+---
 
 ## Dependências
 
-- Ubuntu ou outro Linux com `g++` e suporte a C++17 para compilar e executar os testes locais.
-- `doxygen` e `graphviz` (`dot`) para gerar a documentação HTML e os diagramas.
-- Para etapas posteriores na placa: SDK/compilador cruzado `arm-buildroot-linux-gnueabihf-g++` compatível com o Linux embarcado e acesso serial ou SSH.
+- Ubuntu ou outro Linux com suporte a C++17 (`build-essential`).
+- Compilador cruzado ARM para o kit: `arm-linux-gnueabihf-g++` (ou SDK buildroot fornecido: `arm-buildroot-linux-gnueabihf-g++`).
+- Python 3 para execução do servidor receptor no computador.
+- `doxygen` e `graphviz` para geração da documentação técnica em HTML.
 
-## Compilacao e teste no Ubuntu (sem hardware)
+---
 
-```bash
-g++ -std=c++17 -Wall -Wextra -Wpedantic -Iinclude src/SensorSom.cpp main.cpp -o sensor_som
-./sensor_som dados/leitura_exemplo.txt
-```
+## Compilação e Testes Automatizados
 
-Saída verificada com o arquivo simulado:
-
-```text
-Fonte: dados/leitura_exemplo.txt
-Leitura bruta do ADC: 88
-```
-
-Testes automatizados:
+O gerenciamento da compilação é feito pelo `Makefile` da raiz:
 
 ```bash
-g++ -std=c++17 -Wall -Wextra -Wpedantic -Iinclude src/SensorSom.cpp testes/teste_sensor_som.cpp -o teste_sensor_som
-./teste_sensor_som
+# Compilar a aplicacao localmente
+make
+
+# Executar toda a suite de testes automatizados
+make test
+
+# Gerar a documentacao tecnica com Doxygen
+make docs
+
+# Limpar os binarios gerados
+make clean
 ```
 
-Saída verificada dos testes locais:
+### Compilação Cruzada para STM32MP1-DK1
 
-```text
-Testes locais: OK
-```
-
-O argumento de `sensor_som` é o caminho de um arquivo com uma leitura inteira. Sem argumento, o programa usa `/sys/bus/iio/devices/iio:device0/in_voltage13_raw`, disponível apenas na placa configurada. Os valores do arquivo de exemplo e dos testes **não são medições do KY-037**.
-
-## Compilacao cruzada para STM32 (a validar na placa)
-
-No Ubuntu, com o SDK fornecido pelo professor extraido:
+Para compilar o binário ARM que será executado na placa:
 
 ```bash
-SDK="$HOME/Downloads/arm-buildroot-linux-gnueabihf_sdk-buildroot"
-"$SDK/bin/arm-buildroot-linux-gnueabihf-g++" -std=c++17 -Wall -Wextra -Wpedantic -Iinclude src/SensorSom.cpp main.cpp -o sensor_som_arm
-file sensor_som_arm
+# Utilizando o compilador padrao do sistema:
+make arm
+
+# Ou apontando explicitamente para a toolchain extraida do professor:
+make arm ARM_CXX="$HOME/Downloads/arm-buildroot-linux-gnueabihf_sdk-buildroot/bin/arm-buildroot-linux-gnueabihf-g++"
 ```
 
-Esses comandos mostram como gerar um binário ARM com o SDK fornecido. A execução na placa e a leitura do KY-037 ainda precisam ser testadas na Entrega 2; a compatibilidade do binário com o Linux instalado no kit não foi confirmada aqui.
+O comando gerará o binário `sensor_som_arm` (ELF 32-bit ARM).
 
-## Canal ADC identificado no laboratorio
+---
 
-- Entrada fisica escolhida: **A4**.
-- Dispositivo IIO: `iio:device0` (nome `48003000.adc:adc@0`).
-- Canal: `in_voltage13_raw`.
-- Caminho completo: `/sys/bus/iio/devices/iio:device0/in_voltage13_raw`.
-- Leituras ja observadas com **A4 conectado ao GND**: `56, 88, 0, 72, 0, 0` (contagens brutas), e escala `0.038146972` com offset `0`.
-- As observacoes acima **nao sao leituras do KY-037**.
+## Conexão do Hardware e Canal ADC
 
-A aplicacao usa esse caminho por padrao, ou outro indicado como argumento na linha de comando.
+- **Kit:** STM32MP1-DK1.
+- **Sensor:** Detector de som analógico KY-037.
+- **Alimentação:** Pino `3V3` da barra CN16 (pino 4 ou 5) e `GND` (pino 6 ou 7). **Nunca utilizar 5V.**
+- **Sinal analógico (AO):** Pino `A4` do kit (entrada do canal ADC `in_voltage13_raw`). Pino digital (DO) desconectado.
+- **Dispositivo IIO:** `/sys/bus/iio/devices/iio:device0/in_voltage13_raw`.
+- **Valores medidos:** contagens brutas do conversor analógico-digital (ADC), não correspondendo a decibéis (dB).
 
-## Documentacao Doxygen
+---
 
-Instale Doxygen e Graphviz no Ubuntu (caso ainda nao estejam instalados):
+## Histórico das Entregas Anteriores
 
-```bash
-sudo apt-get update
-sudo apt-get install doxygen graphviz
-```
+### Entrega 1: Leitura Básica e Orientação a Objetos
+Implementação da classe `SensorSom` com encapsulamento estrito, RAII e documentação Doxygen.
+- Diagrama UML gerado: `evidencias/doxygen_sensor_som.png`
+- Documentação de métodos: `evidencias/doxygen_metodos.png`
 
-Na raiz do projeto, execute:
-
-```bash
-doxygen --version
-dot -V
-doxygen Doxyfile
-```
-
-Abra `docs/html/index.html` no navegador. Confira as paginas das classes
-`SensorSom` e `AplicacaoSensorSom`, os metodos, os atributos privados e os
-arquivos-fonte. O arquivo `Doxyfile` ativa opcoes sugeridas nos slides da
-disciplina: `EXTRACT_PRIVATE`, `EXTRACT_STATIC`, `SOURCE_BROWSER`,
-`INLINE_SOURCES`, `HAVE_DOT`, `UML_LOOK` e `DOT_UML_DETAILS`.
-
-### Evidências da Entrega 1
-
-As imagens abaixo foram obtidas da documentação Doxygen
-gerada no Ubuntu.
-
-**Diagrama UML da classe SensorSom:**
-
-![Diagrama UML da classe SensorSom](evidencias/doxygen_sensor_som.png)
-
-**Documentação dos métodos:**
-
-![Documentação dos métodos da classe SensorSom](evidencias/doxygen_metodos.png)
-
-A documentação HTML completa pode ser gerada com
-`doxygen Doxyfile`. A pasta `docs/` não é
-versionada no Git: os comentários Doxygen estão nos arquivos-fonte, e o `Doxyfile` permite recriar o HTML. A saída dos testes locais está registrada acima.
-
-## Modelo da classe
-
-```text
-SensorSom
---------------------------------
-- caminhoAdc_: std::string
-- ultimaLeitura_: int
-- possuiLeitura_: bool
---------------------------------
-+ SensorSom(caminhoAdc)
-+ lerBruto(): int
-+ possuiLeitura(): bool
-+ obterUltimaLeitura(): int
-+ obterCaminhoAdc(): const string&
-```
-
-## Próxima etapa
-
-1. Executar o programa na STM32 e validar a leitura real do KY-037.
-2. Realizar testes com diferentes níveis de ruído.
-3. Analisar os valores obtidos pelo ADC e verificar o comportamento do sensor.
-4. Registrar os resultados e as evidências no GitHub.
-
-As leituras reais também serão contagens brutas do ADC, não valores calibrados em dB.
-
-## Resultados experimentais da Entrega 2
-
-O programa foi executado na STM32MP1-DK1 com o sensor
-KY-037 conectado à entrada analógica A4.
-
-Foram realizadas 100 leituras em silêncio e 100 com ruído,
-utilizando intervalo solicitado de 100 ms.
+### Entrega 2: Aquisição Periódica e Validação Experimental
+Validação da leitura na placa real com análise estatística entre silêncio e ruído com intervalo de 100 ms:
 
 | Indicador | Silêncio | Ruído |
 |---|---:|---:|
@@ -162,91 +98,92 @@ utilizando intervalo solicitado de 100 ms.
 | Mínimo | 3.522 | 3.190 |
 | Máximo | 4.561 | 41.204 |
 
-O teste com ruído apresentou picos mais elevados.
-Esses valores representam contagens brutas do ADC,
-não níveis sonoros em decibéis.
+Gráficos comparativos disponíveis em `evidencias/entrega2/` e análise em `evidencias/entrega2/ANALISE_ENTREGA2.md`.
 
-### Evidências
-
-![Gráfico das medições](evidencias/entrega2/ky037_comparacao_completa.png)
-
-![Gráfico ampliado](evidencias/entrega2/ky037_comparacao_ampliada.png)
-
-[Análise detalhada](evidencias/entrega2/ANALISE_ENTREGA2.md)
-
-### Execução na STM32
-
-Para executar o programa após transferi-lo para a placa:
-
-    chmod +x /root/sensor_som_arm
-    /root/sensor_som_arm --amostras 100 --intervalo-ms 100
+---
 
 ## Entrega 3: Comunicação e Protocolo UDP
 
 Nesta etapa, implementou-se a transmissão contínua e em tempo real dos dados do sensor KY-037 a partir do kit STM32MP1-DK1 para um servidor central no computador via socket UDP, atendendo aos requisitos de IoT do projeto.
 
-### Arquitetura Orientada a Objetos (Sem varááieis globais)
+### Arquitetura Orientada a Objetos (Sem variáveis globais)
 
-- `include/ClienteUDP.hpp` e `src/ClienteUDP.cpp`: classe encapsulada com IAII para gerenciamento de descritores de socket UDP POSIX (`socket`, `sendto`, `close`), tratamento de exceções e independência de varááieis globais.
-- `include/ProtocoloSom.hpp` e `src/ProtocoloSom.cpp`: classe responsável pela formatação e montagem dos pacotes nos formatos JSON (pádrão) e CSV.
-- `include/MonitoramentoSom.hpp` e `src/MonitoramentoSom.cpp`: integração do laço temporal de aquisição com o envio UDP concorrente à exibição local.
-- `main.cpp`: expansão da CLI com os parâmetros `--ip`, `--porta`, `--id-sensor`  e `--formato`.
-- `servidor_udp.py`: receptor em Python para validação e recepção no computador do operador.
-- `testes/teste_protocolo_udp.cpp`: testes unitários de serialização e envio/recepção em loopback (`127.0.0.1`).
+- `ClienteUDP`: encapsulamento seguro com RAII de descritores de socket UDP POSIX (`socket`, `sendto`, `close`), validação de endereçamento IPv4 e tratamento robusto de exceções.
+- `ProtocoloSom`: responsável pela formatação dos pacotes de telemetria nos formatos JSON e CSV.
+- `MonitoramentoSom`: integrado para transmitir os dados por UDP de forma concorrente à exibição local.
+- `AplicacaoSensorSom` (em `main.cpp`): interface CLI com suporte às opções de rede (`--ip`, `--porta`, `--id-sensor`, `--formato`).
+- `ServidorReceptorUDP` (em `servidor_udp.py`): classe servidora orientada a objetos para escuta e tratamento dos datagramas no PC.
 
 ### Especificação do Protocolo de Mensagens
 
-O protocolo transmite datagramas UDP contendo os quatro campos obrigatórios definidos no edital:
+O protocolo transmite datagramas UDP contendo os campos obrigatórios especificados pelo edital (`sensor`, `valor`, `unidade`), além do campo `timestamp`, incluído opcionalmente nesta implementação para rastreabilidade temporal:
 
-| Campo | Tipo | Descrição | Exemplo |
-| :--- | :--- | :--- | :--- |
-| `sensor` | `string` | Identificador único do sensor/grupo | `"KY-037"` |
-| `valor` | `inteiro` | Leitura bruta do ADC (`in_voltage13_raw`) | `3857` |
-| `unidade` | `string` | Unidade da grandeza lida | `"raw"` |
-| `timestamp` | `inteiro (ms)`| Época UNIX ém milissegundos da leitura | `	946686107619` |
+| Campo | Tipo | Obrigatoriedade | Descrição | Exemplo |
+| :--- | :--- | :---: | :--- | :--- |
+| `sensor` | `string` | Obrigatório | Identificador do sensor / grupo | `"KY-037"` |
+| `valor` | `inteiro` | Obrigatório | Leitura analógica bruta (`in_voltage13_raw`) | `3857` |
+| `unidade` | `string` | Obrigatório | Unidade física / contagens do conversor | `"raw"` |
+| `timestamp` | `inteiro (ms)`| Opcional | Tempo Unix em milissegundos da leitura | `946686107619` |
 
-
-#### Formato JSON (Pádrão adotado):
+#### Formato JSON (Padrão adotado):
 ```json
 {"sensor":"KY-037","valor":3857,"unidade":"raw","timestamp":946686107619}
 ```
 
-
-#### Formato CSU (Alternativo):
+#### Formato CSV (Alternativo):
 ```text
 KY-037,3857,raw,946686107619
 ```
 
+> **Nota sobre o timestamp:** Durante os testes na bancada, o relógio interno (RTC) da STM32MP1-DK1 não estava sincronizado via NTP com a internet. Portanto, o campo `timestamp` demonstra a correta formatação e funcionamento do protocolo, mas reflete o relógio local inicializado do kit.
 
-### Instruções de Execução
+### Instruções de Execução da Entrega 3
 
-1. **No computador (Servidor Receptor):**
+1. **Identificar o IP do computador na rede local:**
+   No Windows, execute `ipconfig` (ou `ifconfig` no Linux) para verificar o endereço da interface Ethernet conectada à placa (ex: `192.168.42.10` ou `192.168.42.1`).
+
+2. **Iniciar o Servidor Receptor no computador:**
    ```bash
    python servidor_udp.py 8080
    ```
 
-2. **Na STM32MP1-DK1 (Transmissor):**
+3. **Executar o programa na STM32MP1-DK1 (via TeraTerm/Serial):**
    ```bash
    cd /home/root
    chmod +x sensor_som_arm
+   ./sensor_som_arm --ip <IP_DO_COMPUTADOR> --porta 8080 --amostras 30 --intervalo-ms 100
+   ```
+   *(Exemplo utilizado na bancada com o computador em `192.168.42.10`)*:
+   ```bash
    ./sensor_som_arm --ip 192.168.42.10 --porta 8080 --amostras 30 --intervalo-ms 100
    ```
 
-
 ### Evidências da Execução Real no Kit STM32
 
-Os testes foram realizados conectando a STM32MP1-DK1 (`192.168.42.2`) ao computador (`192.168.42.10`) via cabo Ethernet:
+Os testes práticos foram realizados conectando a STM32MP1-DK1 (`192.168.42.2`) ao computador (`192.168.42.10`) via cabo de rede Ethernet direto a 1 Gbps:
 
-**1. Execução no terminal da STM32MP1-DK1 (TeraTerm via Serial):**
+**1. Execução no terminal serial da placa (TeraTerm):**
 
 ![Execução na STM32](evidencias/entrega3/terminal_stm32_udp.png)
 
-**2. Recepção em tempo real no servidor central (PC:)**
+**2. Recepção em tempo real no servidor central (PowerShell):**
 
 ![Servidor Receptor UDP no PC](evidencias/entrega3/servidor_udp_pc.jpg)
 
-Todas as 30 amostras foram transmitidas e decodificadas sem perdas no receptor em tempo real.
+Na execução documentada, o servidor recebeu com sucesso as 30 mensagens enviadas pela STM32 sem perdas. Ressalta-se que a comunicação utiliza o protocolo UDP, que por definição não é orientado a conexão e não garante entrega em ambientes com perda de pacotes.
 
-## Autoria e colaboracao
+---
 
-Implementacao inicial disponibilizada para revisao e continuidade pelo grupo. O GitHub deve registrar os commits de cada integrante. Os resultados e fotos devem corresponder apenas a testes realmente realizados.
+## Próxima Etapa — Entrega 4
+
+Implementação da interface gráfica (GUI) no computador servidor, contemplando:
+- Atualização visual das leituras em tempo real recebidas via UDP.
+- Histórico gráfico temporal (últimos 30 a 60 segundos).
+- Alerta visual para picos e ruídos fora dos limites pré-estabelecidos.
+- Exportação e salvamento do histórico de telemetria em arquivos de log/CSV.
+
+---
+
+## Autoria e Colaboração
+
+Projeto desenvolvido pelo grupo de monitoramento com sensor de som KY-037 para a disciplina de Programação Aplicada (IME). Todos os registros, commits e evidências correspondem a ensaios reais executados em laboratório com o kit STM32MP1-DK1.

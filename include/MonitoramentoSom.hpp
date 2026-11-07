@@ -1,18 +1,21 @@
 #ifndef MONITORAMENTO_SOM_HPP
 #define MONITORAMENTO_SOM_HPP
 
+#include "ClienteUDP.hpp"
+#include "ProtocoloSom.hpp"
 #include "SensorSom.hpp"
 
 #include <chrono>
 #include <cstddef>
 #include <iosfwd>
+#include <memory>
 
 /**
  * @brief Realiza aquisicoes periodicas da classe SensorSom no Linux embarcado.
  *
  * @details Usa o ADC via arquivos sysfs/IIO, sem acesso direto a registradores.
  * Exibe contagens brutas, sem assumir conversao para decibeis (dB).
- * O uso de std::chrono::steady_clock evita depender do ajuste do relogio.
+ * Pode transmitir dados em tempo real via socket UDP para um servidor central.
  */
 class MonitoramentoSom {
 public:
@@ -28,11 +31,19 @@ public:
                     std::size_t quantidadeAmostras);
 
     /**
-     * @brief Coleta e apresenta as amostras em formato CSV simples.
+     * @brief Configura a transmissao de telemetria via UDP.
+     * @param cliente Referencia ao cliente UDP configurado.
+     * @param protocolo Referencia ao protocolo de empacotamento.
+     * @param formato Formato da mensagem (JSON ou CSV).
+     */
+    void configurarUDP(ClienteUDP* cliente,
+                       ProtocoloSom* protocolo,
+                       FormatoMensagem formato = FormatoMensagem::JSON);
+
+    /**
+     * @brief Coleta e apresenta as amostras em formato CSV simples, transmitindo por UDP se ativo.
      * @param saida Fluxo em que as leituras serao impressas.
      * @throws std::runtime_error Se a leitura do ADC falhar.
-     * @details A execucao continua pode ser encerrada com Ctrl+C.
-     * Cada registro possui numero da amostra, tempo decorrido (ms) e leitura.
      */
     void executar(std::ostream& saida);
 
@@ -40,6 +51,9 @@ private:
     SensorSom& sensor_;                         ///< Leitor IIO utilizado.
     std::chrono::milliseconds intervalo_;       ///< Periodo solicitado em ms.
     std::size_t quantidadeAmostras_;            ///< Zero equivale a continuo.
+    ClienteUDP* clienteUdp_;                    ///< Ponteiro para cliente UDP (nullptr se inativo).
+    ProtocoloSom* protocolo_;                   ///< Gerador de pacotes do protocolo.
+    FormatoMensagem formatoMensagem_;           ///< JSON ou CSV.
 };
 
 #endif  // MONITORAMENTO_SOM_HPP

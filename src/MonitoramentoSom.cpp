@@ -9,10 +9,23 @@ MonitoramentoSom::MonitoramentoSom(
     SensorSom& sensor,
     std::chrono::milliseconds intervalo,
     std::size_t quantidadeAmostras)
-    : sensor_(sensor), intervalo_(intervalo), quantidadeAmostras_(quantidadeAmostras) {
+    : sensor_(sensor),
+      intervalo_(intervalo),
+      quantidadeAmostras_(quantidadeAmostras),
+      clienteUdp_(nullptr),
+      protocolo_(nullptr),
+      formatoMensagem_(FormatoMensagem::JSON) {
     if (intervalo_.count() < 1) {
         throw std::invalid_argument("O intervalo deve ser de pelo menos 1 ms.");
     }
+}
+
+void MonitoramentoSom::configurarUDP(ClienteUDP* cliente,
+                                     ProtocoloSom* protocolo,
+                                     FormatoMensagem formato) {
+    clienteUdp_ = cliente;
+    protocolo_ = protocolo;
+    formatoMensagem_ = formato;
 }
 
 void MonitoramentoSom::executar(std::ostream& saida) {
@@ -21,6 +34,12 @@ void MonitoramentoSom::executar(std::ostream& saida) {
     auto proximaLeitura = inicio;
 
     saida << "Fonte ADC: " << sensor_.obterCaminhoAdc() << '\n';
+    if (clienteUdp_ != nullptr) {
+        saida << "Transmissao UDP ativa para "
+              << clienteUdp_->obterIpServidor() << ':' << clienteUdp_->obterPorta()
+              << " [formato: " << (formatoMensagem_ == FormatoMensagem::JSON ? "JSON" : "CSV")
+              << "]\n";
+    }
     saida << "amostra,tempo_ms,adc_bruto\n";
     saida.flush();
 
@@ -34,6 +53,17 @@ void MonitoramentoSom::executar(std::ostream& saida) {
         ++contador;
         saida << contador << ',' << tempoMs << ',' << valor << '\n';
         saida.flush();
+
+        // Envio via UDP caso configurado
+        if (clienteUdp_ != nullptr && protocolo_ != nullptr) {
+            try {
+                const std::string pacote = protocolo_->empacotar(valor, formatoMensagem_);
+                clienteUdp_->enviar(pacote);
+            } catch (const std::exception& erro) {
+                saida << "[Aviso UDP] Falha no envio do pacote: " << erro.what() << '\n';
+                saida.flush();
+            }
+        }
 
         // Sleep ate o proximo periodo; evita acumular atraso se o IIO for lento.
         proximaLeitura += intervalo_;

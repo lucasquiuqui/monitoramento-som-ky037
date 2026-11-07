@@ -181,9 +181,71 @@ Para executar o programa após transferi-lo para a placa:
     chmod +x /root/sensor_som_arm
     /root/sensor_som_arm --amostras 100 --intervalo-ms 100
 
-## Protocolo
+## Entrega 3: Comunicação e Protocolo UDP
 
-Ainda nao implementado — pertence a entrega de comunicacao UDP.
+Nesta etapa, implementou-se a transmissão contínua e em tempo real dos dados do sensor KY-037 a partir do kit STM32MP1-DK1 para um servidor central no computador via socket UDP, atendendo aos requisitos de IoT do projeto.
+
+### Arquitetura Orientada a Objetos (Sem varááieis globais)
+
+- `include/ClienteUDP.hpp` e `src/ClienteUDP.cpp`: classe encapsulada com IAII para gerenciamento de descritores de socket UDP POSIX (`socket`, `sendto`, `close`), tratamento de exceções e independência de varááieis globais.
+- `include/ProtocoloSom.hpp` e `src/ProtocoloSom.cpp`: classe responsável pela formatação e montagem dos pacotes nos formatos JSON (pádrão) e CSV.
+- `include/MonitoramentoSom.hpp` e `src/MonitoramentoSom.cpp`: integração do laço temporal de aquisição com o envio UDP concorrente à exibição local.
+- `main.cpp`: expansão da CLI com os parâmetros `--ip`, `--porta`, `--id-sensor`  e `--formato`.
+- `servidor_udp.py`: receptor em Python para validação e recepção no computador do operador.
+- `testes/teste_protocolo_udp.cpp`: testes unitários de serialização e envio/recepção em loopback (`127.0.0.1`).
+
+### Especificação do Protocolo de Mensagens
+
+O protocolo transmite datagramas UDP contendo os quatro campos obrigatórios definidos no edital:
+
+| Campo | Tipo | Descrição | Exemplo |
+| :--- | :--- | :--- | :--- |
+| `sensor` | `string` | Identificador único do sensor/grupo | `"KY-037"` |
+| `valor` | `inteiro` | Leitura bruta do ADC (`in_voltage13_raw`) | `3857` |
+| `unidade` | `string` | Unidade da grandeza lida | `"raw"` |
+| `timestamp` | `inteiro (ms)`| Época UNIX ém milissegundos da leitura | `	946686107619` |
+
+
+#### Formato JSON (Pádrão adotado):
+```json
+{"sensor":"KY-037","valor":3857,"unidade":"raw","timestamp":946686107619}
+```
+
+
+#### Formato CSU (Alternativo):
+```text
+KY-037,3857,raw,946686107619
+```
+
+
+### Instruções de Execução
+
+1. **No computador (Servidor Receptor):**
+   ```bash
+   python servidor_udp.py 8080
+   ```
+
+2. **Na STM32MP1-DK1 (Transmissor):**
+   ```bash
+   cd /home/root
+   chmod +x sensor_som_arm
+   ./sensor_som_arm --ip 192.168.42.10 --porta 8080 --amostras 30 --intervalo-ms 100
+   ```
+
+
+### Evidências da Execução Real no Kit STM32
+
+Os testes foram realizados conectando a STM32MP1-DK1 (`192.168.42.2`) ao computador (`192.168.42.10`) via cabo Ethernet:
+
+**1. Execução no terminal da STM32MP1-DK1 (TeraTerm via Serial):**
+
+![Execução na STM32](evidencias/entrega3/terminal_stm32_udp.png)
+
+**2. Recepção em tempo real no servidor central (PC:)**
+
+![Servidor Receptor UDP no PC](evidencias/entrega3/servidor_udp_pc.jpg)
+
+Todas as 30 amostras foram transmitidas e decodificadas sem perdas no receptor em tempo real.
 
 ## Autoria e colaboracao
 

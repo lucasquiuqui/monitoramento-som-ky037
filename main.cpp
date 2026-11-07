@@ -1,16 +1,18 @@
+#include "ClienteUDP.hpp"
 #include "MonitoramentoSom.hpp"
+#include "ProtocoloSom.hpp"
 #include "SensorSom.hpp"
 
 #include <chrono>
 #include <cstddef>
 #include <exception>
 #include <iostream>
-#include <limits>
+#include <memory>
 #include <stdexcept>
 #include <string>
 
 /**
- * @brief Interface de linha de comando da Entrega 2.
+ * @brief Interface de linha de comando com suporte a telemetria UDP (Entrega 3).
  * @details Toda a logica de configuracao fica na classe, sem variaveis globais.
  */
 class AplicacaoSensorSom {
@@ -28,6 +30,12 @@ public:
         bool caminhoConfigurado = false;
         bool quantidadeConfigurada = false;
         bool modoContinuo = false;
+
+        // Configuracoes UDP
+        std::string ipServidor = "";
+        int portaUdp = 0;
+        std::string idSensor = "KY-037";
+        FormatoMensagem formato = FormatoMensagem::JSON;
 
         try {
             for (int i = 1; i < argc; ++i) {
@@ -59,8 +67,34 @@ public:
                     }
                     quantidadeAmostras = 0;
                     modoContinuo = true;
+                } else if (argumento == "--ip") {
+                    if (++i >= argc) {
+                        throw std::invalid_argument("--ip exige um endereco IPv4.");
+                    }
+                    ipServidor = argv[i];
+                } else if (argumento == "--porta") {
+                    if (++i >= argc) {
+                        throw std::invalid_argument("--porta exige um numero de porta.");
+                    }
+                    portaUdp = static_cast<int>(lerNumero(argv[i], 1, 65535, "porta"));
+                } else if (argumento == "--id-sensor") {
+                    if (++i >= argc) {
+                        throw std::invalid_argument("--id-sensor exige um nome.");
+                    }
+                    idSensor = argv[i];
+                } else if (argumento == "--formato") {
+                    if (++i >= argc) {
+                        throw std::invalid_argument("--formato exige 'json' ou 'csv'.");
+                    }
+                    const std::string fmt = argv[i];
+                    if (fmt == "json" || fmt == "JSON") {
+                        formato = FormatoMensagem::JSON;
+                    } else if (fmt == "csv" || fmt == "CSV") {
+                        formato = FormatoMensagem::CSV;
+                    } else {
+                        throw std::invalid_argument("Formato desconhecido: " + fmt + " (use json ou csv)");
+                    }
                 } else if (!argumento.empty() && argumento[0] != '-' && !caminhoConfigurado) {
-                    // Compatibilidade com a Entrega 1: ./sensor_som arquivo.txt
                     caminho = argumento;
                     caminhoConfigurado = true;
                 } else {
@@ -68,11 +102,26 @@ public:
                 }
             }
 
+            // Validar configuracao UDP se fornecida
+            if ((!ipServidor.empty() && portaUdp == 0) || (ipServidor.empty() && portaUdp != 0)) {
+                throw std::invalid_argument("Para usar UDP, informe ambos: --ip <IP> e --porta <PORTA>.");
+            }
+
             SensorSom sensor(caminho);
             MonitoramentoSom monitor(
                 sensor,
                 std::chrono::milliseconds(intervaloMs),
                 static_cast<std::size_t>(quantidadeAmostras));
+
+            std::unique_ptr<ClienteUDP> cliente;
+            std::unique_ptr<ProtocoloSom> protocolo;
+
+            if (!ipServidor.empty() && portaUdp > 0) {
+                cliente = std::make_unique<ClienteUDP>(ipServidor, portaUdp);
+                protocolo = std::make_unique<ProtocoloSom>(idSensor, "raw");
+                monitor.configurarUDP(cliente.get(), protocolo.get(), formato);
+            }
+
             monitor.executar(std::cout);
             return 0;
         } catch (const std::exception& erro) {
@@ -98,26 +147,33 @@ private:
         }
         std::size_t posicao = 0;
         const unsigned long valor = std::stoul(texto, &posicao, 10);
-        if (posicao != texto.size() || valor < minimo || valor > maximo) {
-            throw std::out_of_range("Fora do intervalo permitido para " + campo);
+        if (valor < minimo || valor > maximo) {
+            throw std::invalid_argument("Valor fora da faixa permitida para " + campo);
         }
         return valor;
     }
 
-    /** @brief Exibe instrucoes de uso para a plataforma STM32 e Ubuntu. */
-    void mostrarAjuda(const char* programa) const {
-        std::cout << "Uso: " << programa << " [arquivo_adc] [opcoes]\n"
-                  << "Opcoes:\n"
-                  << "  --arquivo CAMINHO       Arquivo IIO ou de teste\n"
-                  << "  --amostras N            Numero de amostras (padrao: 20)\n"
-                  << "  --intervalo-ms N        Intervalo de 1 a 60000 ms (padrao: 200)\n"
-                  << "  --continuo              Ler ate Ctrl+C\n"
-                  << "  --ajuda                 Mostrar esta mensagem\n"
-                  << "Sem arquivo: usa in_voltage13_raw do ADC1, entrada A4.\n"
-                  << "Valores sao contagens brutas, nao decibeis.\n";
+    /** @brief Exibe o manual de uso das opcoes da linha de comando. */
+    void mostrarAjuda(const char* nomePrograma) const {
+        std::cout << "Uso: " << nomePrograma << " [OPCOES] [ARQUIVO_ADC]\n\n"
+                  << "Opcoes gerais:\n"
+                  << "  --arquivo CAMINHO       Caminho do arquivo IIO ou texto de teste.\n"
+                  << "  --intervalo-ms INT      Intervalo entre leituras em ms (padrao: 200).\n"
+                  << "  --amostras INT          Quantidade de amostras a coletar (padrao: 20).\n"
+                  << "  --continuo              Coleta indefinida ate Ctrl+C.\n"
+                  << "  --ajuda, -h             Exibe esta mensagem.\n\n"
+                  << "Opcoes de comunicacao UDP (Entrega 3):\n"
+                  << "  --ip ENDERECO_IPV4      IP do servidor central receptor.\n"
+                  << "  --porta PORTA           Porta UDP do servidor (1 a 65535).\n"
+                  << "  --id-sensor NOME        Identificador do sensor (padrao: KY-037).\n"
+                  << "  --formato json|csv      Formato da mensagem UDP (padrao: json).\n\n"
+                  << "Exemplos:\n"
+                  << "  " << nomePrograma << " dados/leitura_exemplo.txt --amostras 5\n"
+                  << "  " << nomePrograma << " --ip 192.168.42.10 --porta 5000 --continuo --intervalo-ms 100\n";
     }
 };
 
 int main(int argc, char* argv[]) {
-    return AplicacaoSensorSom{}.executar(argc, argv);
+    AplicacaoSensorSom app;
+    return app.executar(argc, argv);
 }

@@ -1,4 +1,3 @@
-
 # Sensor de Som KY-037 — STM32MP1-DK1
 
 ## Objetivo e estado do projeto
@@ -7,30 +6,73 @@ Projeto da disciplina **Programação Aplicada à Engenharia Elétrica**: leitur
 
 **Estado:** Entrega 1 (classe e Doxygen), Entrega 2 (leitura real na STM32) e Entrega 3 (transmissão UDP e receptor no computador) implementadas e testadas. A Entrega 4, com interface gráfica, permanece pendente.
 
+## Sensor e funcionamento
+
+O módulo KY-037 capta som por um microfone e disponibiliza um sinal elétrico na saída analógica **AO**. Neste projeto, `+` é ligado a **3,3 V**, `G` a **GND** e `AO` à entrada **A4** da STM32MP1-DK1. A saída digital `DO` não é usada. O Linux disponibiliza a contagem do ADC pelo subsistema IIO; `SensorSom` abre o arquivo correspondente a cada amostra. O programa não converte essa contagem para tensão ou dB e não captura áudio. O intervalo pedido entre amostras pode variar por causa do escalonamento do Linux e da leitura do arquivo.
+
 ## Estrutura do projeto
 
-- `include/SensorSom.hpp`: declaração da classe, atributos privados, métodos públicos e comentários Doxygen.
-- `src/SensorSom.cpp`: leitura de arquivo Linux IIO, tratamento de erros e armazenamento da última leitura válida.
-- `main.cpp`: aplicação de linha de comando que configura a leitura periódica e, opcionalmente, o envio UDP; lógica encapsulada em classes.
-- `testes/teste_sensor_som.cpp`: teste local com arquivo simulado e tratamento de entrada invalida.
-- `dados/leitura_exemplo.txt`: valor ficticio `88` usado somente no teste.
-- `Doxyfile`: configuracao do gerador Doxygen, incluindo membros privados, navegador de codigo e diagramas Graphviz.
-- `DOCUMENTACAO.md`: página inicial da documentação gerada.
+```text
+.
+├── README.md                    Visão geral, uso e resultados
+├── Makefile                     Compilação, testes e documentação
+├── Doxyfile                     Configuração do Doxygen
+├── main.cpp                     Interface de linha de comando C++
+├── servidor_udp.py              Receptor UDP no computador
+├── include/                     Declarações das classes C++
+│   ├── SensorSom.hpp
+│   ├── MonitoramentoSom.hpp
+│   ├── ProtocoloSom.hpp
+│   └── ClienteUDP.hpp
+├── src/                         Implementações correspondentes
+│   ├── SensorSom.cpp
+│   ├── MonitoramentoSom.cpp
+│   ├── ProtocoloSom.cpp
+│   └── ClienteUDP.cpp
+├── testes/                      Testes locais de leitura, monitoramento e UDP
+│   ├── teste_sensor_som.cpp
+│   ├── teste_monitoramento_som.cpp
+│   └── teste_protocolo_udp.cpp
+├── dados/
+│   └── leitura_exemplo.txt      Valor simulado para os testes
+└── evidencias/
+    ├── entrega1/                Documentação Doxygen e capturas da classe
+    │   ├── DOCUMENTACAO.md
+    │   ├── INSTRUCOES.md
+    │   ├── doxygen_sensor_som.png
+    │   └── doxygen_metodos.png
+    ├── entrega2/                Roteiro, medições e análise
+    │   ├── ROTEIRO_ENTREGA2.md
+    │   ├── ANALISE_ENTREGA2.md
+    │   ├── silencio.csv
+    │   ├── ruido.csv
+    │   ├── ky037_comparacao_completa.png
+    │   └── ky037_comparacao_ampliada.png
+    └── entrega3/                Capturas da comunicação UDP
+        ├── terminal_stm32_udp.png
+        └── servidor_udp_pc.jpg
+```
+
+O arquivo em `include/` declara cada classe e o arquivo de mesmo nome em `src/` implementa seus métodos. [`DOCUMENTACAO.md`](evidencias/entrega1/DOCUMENTACAO.md) é a página inicial usada pelo Doxygen. O HTML gerado em `docs/html/` e os executáveis compilados não fazem parte dos arquivos versionados.
 
 ### Classes e métodos
 
 - `SensorSom`: recebe o caminho do arquivo ADC no construtor. `lerBruto()` abre o arquivo, valida um inteiro não negativo e guarda a última leitura válida. `possuiLeitura()`, `obterUltimaLeitura()` e `obterCaminhoAdc()` consultam o estado sem expor os atributos privados.
 - `AplicacaoSensorSom` (em `main.cpp`): configura caminho ADC, intervalo, quantidade de amostras e envio UDP opcional; executa o monitoramento e informa erros.
+- `MonitoramentoSom`: `configurarUDP()` associa cliente e protocolo; `executar()` lê periodicamente, exibe as amostras e envia os pacotes quando UDP está ativo.
+- `ProtocoloSom`: `empacotar()` acrescenta o horário atual e `empacotarComTimestamp()` permite informar o horário explicitamente; ambos produzem JSON ou CSV.
+- `ClienteUDP`: `enviar()` transmite um datagrama; o destrutor fecha o socket.
+- `ServidorReceptorUDP` (Python): `iniciar()` escuta a porta, processa e apresenta as mensagens; `fechar()` libera o socket.
 - `TesteSensorSom` (em `testes/teste_sensor_som.cpp`): verifica leitura simulada, estado inicial e preservação da última leitura quando a entrada é inválida.
 
 O código C++ organiza a lógica da aplicação e dos testes em classes, sem variáveis globais.
 
 ## Dependências
 
-- Ubuntu ou outro Linux com `g++` e suporte a C++17 para compilar e executar os testes locais.
+- Ubuntu ou outro Linux com `make`, `g++` e suporte a C++17 para compilar e executar os testes locais; a comunicação usa sockets POSIX.
 - `doxygen` e `graphviz` (`dot`) para gerar a documentação HTML e os diagramas.
 - Para compilação e execução na placa: SDK `arm-buildroot-linux-gnueabihf-g++` compatível com o Linux embarcado e acesso serial ou SSH.
-- Python 3 para executar o receptor UDP no computador.
+- Python 3 (somente biblioteca padrão) e rede IPv4 entre computador e placa para executar o receptor UDP.
 
 ## Compilação e testes no Ubuntu (sem hardware)
 
@@ -40,7 +82,7 @@ make test
 make docs
 ```
 
-O `make test` executa os testes automatizados e uma aquisição simulada com `dados/leitura_exemplo.txt` (valor fictício `88`). **Esses testes não substituem as medições reais do sensor.**
+O `make test` executa os testes de leitura, monitoramento e UDP em loopback, além de uma aquisição simulada com `dados/leitura_exemplo.txt` (valor fictício `88`). **Esses testes não substituem as medições reais do sensor.**
 
 Para executar apenas uma aquisição simulada:
 
@@ -68,6 +110,12 @@ make arm ARM_CXX="$HOME/Downloads/arm-buildroot-linux-gnueabihf_sdk-buildroot/bi
 
 Esse comando produz `sensor_som_arm`. A execução ARM com leituras reais do KY-037 já foi validada na STM32MP1-DK1; a transmissão UDP também foi demonstrada na placa (evidências abaixo).
 
+Confirme que `file sensor_som_arm` identifica um executável ARM. Com SSH disponível, transfira o programa do computador para o kit (substitua o IP conforme sua rede):
+
+```bash
+scp -O sensor_som_arm root@192.168.42.2:/home/root/
+```
+
 ## Canal ADC identificado no laboratorio
 
 - Entrada fisica escolhida: **A4**.
@@ -78,6 +126,7 @@ Esse comando produz `sensor_som_arm`. A execução ARM com leituras reais do KY-
 - As observacoes acima **nao sao leituras do KY-037**.
 
 A aplicacao usa esse caminho por padrao, ou outro indicado como argumento na linha de comando.
+Se a enumeração IIO mudar no kit, informe o novo arquivo com `--arquivo CAMINHO` ou como argumento posicional. Sem opções, o programa coleta **20 amostras** com intervalo solicitado de **200 ms**. `--continuo` coleta até `Ctrl+C` e não pode ser combinado com `--amostras`.
 
 ## Documentacao Doxygen
 
@@ -109,11 +158,11 @@ gerada no Ubuntu.
 
 **Diagrama UML da classe SensorSom:**
 
-![Diagrama UML da classe SensorSom](evidencias/doxygen_sensor_som.png)
+![Diagrama UML da classe SensorSom](evidencias/entrega1/doxygen_sensor_som.png)
 
 **Documentação dos métodos:**
 
-![Documentação dos métodos da classe SensorSom](evidencias/doxygen_metodos.png)
+![Documentação dos métodos da classe SensorSom](evidencias/entrega1/doxygen_metodos.png)
 
 A documentação HTML completa pode ser gerada com
 `doxygen Doxyfile`. A pasta `docs/` não é
@@ -134,6 +183,73 @@ SensorSom
 + obterUltimaLeitura(): int
 + obterCaminhoAdc(): const string&
 ```
+
+### Fluxograma da aplicação
+
+```mermaid
+flowchart TD
+    A[Iniciar e interpretar argumentos] --> B{Argumentos válidos?}
+    B -- Não --> C[Exibir erro ou ajuda e encerrar]
+    B -- Sim --> D[Criar SensorSom e MonitoramentoSom]
+    D --> E{IP e porta informados?}
+    E -- Sim --> F[Criar ClienteUDP e ProtocoloSom]
+    E -- Não --> G[Ler arquivo IIO]
+    F --> G
+    G --> H{Leitura válida?}
+    H -- Não --> I[Exibir erro e encerrar]
+    H -- Sim --> J[Exibir amostra, tempo e valor]
+    J --> K{UDP ativo?}
+    K -- Sim --> L[Empacotar e enviar datagrama]
+    K -- Não --> M{Restam amostras?}
+    L --> M
+    M -- Sim --> N[Aguardar próximo intervalo]
+    N --> G
+    M -- Não --> O[Encerrar]
+```
+
+Em `--continuo`, a coleta segue até o processo ser interrompido. Se o envio UDP falhar, a aplicação mostra `[Aviso UDP]` e continua a aquisição.
+
+### Diagrama das classes implementadas
+
+```mermaid
+classDiagram
+    class AplicacaoSensorSom {
+      +executar(argc, argv) int
+    }
+    class SensorSom {
+      -caminhoAdc_ string
+      -ultimaLeitura_ int
+      -possuiLeitura_ bool
+      +lerBruto() int
+      +possuiLeitura() bool
+      +obterUltimaLeitura() int
+    }
+    class MonitoramentoSom {
+      +configurarUDP(cliente, protocolo, formato) void
+      +executar(saida) void
+    }
+    class ProtocoloSom {
+      +empacotar(valor, formato) string
+      +empacotarComTimestamp(valor, timestamp, formato) string
+    }
+    class ClienteUDP {
+      +enviar(mensagem) size_t
+    }
+    class ServidorReceptorUDP {
+      +iniciar() void
+      +fechar() void
+    }
+    AplicacaoSensorSom --> SensorSom : cria
+    AplicacaoSensorSom --> MonitoramentoSom : cria
+    AplicacaoSensorSom --> ProtocoloSom : cria se UDP ativo
+    AplicacaoSensorSom --> ClienteUDP : cria se UDP ativo
+    MonitoramentoSom --> SensorSom : lê
+    MonitoramentoSom --> ProtocoloSom : empacota
+    MonitoramentoSom --> ClienteUDP : envia
+    ClienteUDP ..> ServidorReceptorUDP : datagrama UDP
+```
+
+`ServidorReceptorUDP` é uma classe Python no computador; as outras classes deste diagrama são C++. A relação pontilhada representa a comunicação pela rede.
 
 
 ## Resultados experimentais da Entrega 2
@@ -161,18 +277,19 @@ não níveis sonoros em decibéis.
 
 ![Gráfico ampliado](evidencias/entrega2/ky037_comparacao_ampliada.png)
 
-[Análise detalhada](evidencias/entrega2/ANALISE_ENTREGA2.md)
+[Análise detalhada](evidencias/entrega2/ANALISE_ENTREGA2.md) · [Roteiro para reproduzir a aquisição](evidencias/entrega2/ROTEIRO_ENTREGA2.md)
 
 ### Execução na STM32
 
 Para executar o programa após transferi-lo para a placa:
 
-    chmod +x /root/sensor_som_arm
-    /root/sensor_som_arm --amostras 100 --intervalo-ms 100
+    cd /home/root
+    chmod +x sensor_som_arm
+    ./sensor_som_arm --amostras 100 --intervalo-ms 100
 
 ## Entrega 3: Comunicação e Protocolo UDP
 
-Nesta etapa, implementou-se a transmissão contínua e em tempo real dos dados do sensor KY-037 a partir do kit STM32MP1-DK1 para um servidor central no computador via socket UDP, atendendo aos requisitos de IoT do projeto.
+Nesta etapa, implementou-se o envio de cada amostra do sensor KY-037 a partir do kit STM32MP1-DK1 para um receptor no computador via socket UDP.
 
 ### Arquitetura orientada a objetos (C++)
 
@@ -185,23 +302,23 @@ Nesta etapa, implementou-se a transmissão contínua e em tempo real dos dados d
 
 ### Especificação do Protocolo de Mensagens
 
-O protocolo transmite datagramas UDP com os campos `sensor`, `valor` e `unidade`, além de `timestamp` (opcional no enunciado, incluído nesta implementação):
+Cada amostra enviada produz um datagrama UDP de texto UTF-8 com os campos `sensor`, `valor`, `unidade` e `timestamp`. UDP não confirma recebimento nem garante entrega ou ordem:
 
 | Campo | Tipo | Descrição | Exemplo |
 | :--- | :--- | :--- | :--- |
 | `sensor` | `string` | Identificador único do sensor/grupo | `"KY-037"` |
 | `valor` | `inteiro` | Leitura bruta do ADC (`in_voltage13_raw`) | `3857` |
 | `unidade` | `string` | Unidade da grandeza lida | `"raw"` |
-| `timestamp` | `inteiro (ms)`| Tempo Unix em milissegundos da leitura, quando presente | `946686107619` |
+| `timestamp` | `inteiro (ms)`| Tempo Unix em milissegundos segundo o relógio da placa | `946686107619` |
 
 
-#### Formato JSON (Pádrão adotado):
+#### Formato JSON (padrão):
 ```json
 {"sensor":"KY-037","valor":3857,"unidade":"raw","timestamp":946686107619}
 ```
 
 
-#### Formato CSV (alternativo):
+#### Formato CSV (alternativo, ordem `sensor,valor,unidade,timestamp`, sem cabeçalho):
 ```text
 KY-037,3857,raw,946686107619
 ```
@@ -213,7 +330,7 @@ Confira o endereço IPv4 do computador conectado à STM32 (no Windows, `ipconfig
 
 1. **No computador (servidor receptor):**
    ```bash
-   python servidor_udp.py 8080
+   python3 servidor_udp.py 8080
    ```
 
 2. **Na STM32MP1-DK1 (transmissor):**
@@ -224,8 +341,10 @@ Confira o endereço IPv4 do computador conectado à STM32 (no Windows, `ipconfig
    ```
 
 No teste documentado, o computador utilizou `192.168.42.10`; substitua-o pelo IP atual do receptor, caso seja diferente.
+Use `--formato csv` para enviar CSV; o receptor o exibe como texto. Use `--id-sensor NOME` para mudar a identificação. `--ip` e `--porta` precisam ser informados juntos. O receptor mostra as mensagens no terminal e não implementa gráficos ou alertas.
 
 **Observação:** na captura do teste, o relógio da STM32 não estava sincronizado; o `timestamp` demonstra o formato do pacote, mas não corresponde à data real da aquisição.
+O `tempo_ms` da saída local é o tempo decorrido desde o início do programa e não equivale ao `timestamp` Unix da mensagem.
 
 ### Evidências da Execução Real no Kit STM32
 
@@ -245,6 +364,17 @@ Na execução documentada, o servidor recebeu 30 mensagens enviadas pela STM32. 
 ## Próxima etapa — Entrega 4
 
 Implementar a interface gráfica com visualização em tempo real, histórico das leituras, alertas e registro em arquivo. As medições continuam sendo contagens brutas do ADC, não níveis calibrados em dB.
+
+## Índice da documentação e das evidências
+
+| Etapa | Documentação e evidências disponíveis |
+|---|---|
+| Entrega 1 | [Diagrama Doxygen de `SensorSom`](evidencias/entrega1/doxygen_sensor_som.png), [captura dos métodos](evidencias/entrega1/doxygen_metodos.png), [instruções e inventário](evidencias/entrega1/INSTRUCOES.md) e [página inicial do Doxygen](evidencias/entrega1/DOCUMENTACAO.md). |
+| Entrega 2 | [Roteiro de reprodução](evidencias/entrega2/ROTEIRO_ENTREGA2.md), [dados em silêncio](evidencias/entrega2/silencio.csv), [dados com ruído](evidencias/entrega2/ruido.csv), gráficos exibidos acima e [análise detalhada](evidencias/entrega2/ANALISE_ENTREGA2.md). |
+| Entrega 3 | [Captura do terminal da STM32](evidencias/entrega3/terminal_stm32_udp.png) e [captura do terminal receptor no computador](evidencias/entrega3/servidor_udp_pc.jpg), ambos com os programas em funcionamento. |
+| Entrega 4 | Pendente: ainda não há interface gráfica nem captura correspondente. |
+
+Os arquivos `silencio.csv` e `ruido.csv` começam com a linha `Fonte ADC: ...` antes do cabeçalho CSV. A documentação completa do código pode ser gerada com `make docs`. As capturas dos terminais disponíveis documentam a comunicação da Entrega 3; para a Entrega 4, será necessário adicionar capturas reais quando a interface estiver implementada.
 
 ## Autoria e colaboracao
 

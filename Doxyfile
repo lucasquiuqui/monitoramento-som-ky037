@@ -4,10 +4,10 @@ PROJECT_BRIEF          = "Classes C++ de leitura e monitoramento do ADC - Entreg
 OUTPUT_DIRECTORY       = docs
 
 # Arquivos que compoem a documentacao
-INPUT                  = DOCUMENTACAO.md include src main.cpp
+INPUT                  = evidencias/entrega1/DOCUMENTACAO.md include src main.cpp
 FILE_PATTERNS          = *.hpp *.cpp *.md
 RECURSIVE              = NO
-USE_MDFILE_AS_MAINPAGE = DOCUMENTACAO.md
+USE_MDFILE_AS_MAINPAGE = evidencias/entrega1/DOCUMENTACAO.md
 
 # Extracao e navegacao do codigo
 EXTRACT_ALL            = YES

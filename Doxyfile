@@ -1,6 +1,7 @@
-# Documentacao das Entregas 1 e 2 - conforme opcoes apresentadas em aula
+# Documentacao das classes C++ (Entregas 1 a 3).
+# As classes Python da Entrega 4 possuem docstrings e diagrama no README.
 PROJECT_NAME           = "Monitoramento de Som KY-037"
-PROJECT_BRIEF          = "Classes C++ de leitura e monitoramento do ADC - Entregas 1 e 2"
+PROJECT_BRIEF          = "Classes C++: leitura, monitoramento e transmissao UDP - Entregas 1 a 3"
 OUTPUT_DIRECTORY       = docs
 
 # Arquivos que compoem a documentacao

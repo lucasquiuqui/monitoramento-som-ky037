@@ -21,3 +21,11 @@ testar_sensor
 leitura_teste.txt
 README.md.bak
 teste_monitoramento_som
+
+# Cache Python e logs locais gerados pela interface
+__pycache__/
+*.pyc
+logs/
+teste_protocolo_udp
+alertas_ky037.csv
+.ky037_alertas_*.tmp

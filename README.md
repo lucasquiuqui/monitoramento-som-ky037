@@ -4,11 +4,17 @@
 
 Projeto da disciplina **Programação Aplicada à Engenharia Elétrica**: leitura da saída analógica do KY-037 via Linux IIO na STM32MP1-DK1, usando classes C++ documentadas com Doxygen. As leituras são contagens brutas do ADC, **não decibéis (dB)**.
 
-**Estado:** Entregas 1, 2 e 3 implementadas; **Entrega 4 implementada e validada com leituras reais do KY-037 enviadas pela STM32MP1-DK1 via UDP ao PC**. Capturas da execução na placa, gráfico em tempo real, histórico de alertas, CSV da aquisição e relatório Excel estão em [`evidencias/entrega4/`](evidencias/entrega4/INSTRUCOES.md). A publicação no GitHub e a revisão do commit ainda dependem do grupo.
+**Estado:** Entregas 1, 2 e 3 implementadas; **Entrega 4 implementada e validada com leituras reais do KY-037 enviadas pela STM32MP1-DK1 via UDP ao PC**. Capturas da execução na placa, gráfico em tempo real, histórico de alertas, CSV da aquisição e relatório Excel estão em [`evidencias/entrega4/`](evidencias/entrega4/INSTRUCOES.md). A [demonstração em vídeo](https://drive.google.com/file/d/1BVW8qoyFHY4mEYED9KS1cEBujymM_ru7/view?usp=sharing) e a [animação da interface](evidencias/entrega5/interface.gif) complementam as evidências. A publicação no GitHub e a revisão do commit ainda dependem do grupo.
 
 ## Sensor e funcionamento
 
 O módulo KY-037 capta som por um microfone e disponibiliza um sinal elétrico na saída analógica **AO**. Neste projeto, `+` é ligado a **3,3 V**, `G` a **GND** e `AO` à entrada **A4** da STM32MP1-DK1. A saída digital `DO` não é usada. O Linux disponibiliza a contagem do ADC pelo subsistema IIO; `SensorSom` abre o arquivo correspondente a cada amostra. O programa não converte essa contagem para tensão ou dB e não captura áudio. O intervalo pedido entre amostras pode variar por causa do escalonamento do Linux e da leitura do arquivo.
+
+**Conexão física registrada durante a demonstração:**
+
+![Sensor KY-037 conectado à placa STM32MP1-DK1 durante o ensaio](evidencias/entrega0/conexao_ky037_stm32_energizado.png)
+
+A foto mostra o conjunto **energizado**. Ela documenta a montagem usada no ensaio, mas não substitui a foto com o kit **desligado** exigida antes dos testes pelo enunciado. Nessa montagem, `+` vai a 3,3 V, `G` a GND e `AO` a A4; a saída `DO` fica livre.
 
 ## Estrutura do projeto
 
@@ -47,6 +53,8 @@ O módulo KY-037 capta som por um microfone e disponibiliza um sinal elétrico n
 ├── dados/
 │   └── leitura_exemplo.txt      Valor simulado para os testes
 └── evidencias/
+    ├── entrega0/
+    │   └── conexao_ky037_stm32_energizado.png  Foto da montagem durante o ensaio
     ├── entrega1/                Documentação Doxygen e capturas da classe
     │   ├── DOCUMENTACAO.md
     │   ├── INSTRUCOES.md
@@ -62,7 +70,7 @@ O módulo KY-037 capta som por um microfone e disponibiliza um sinal elétrico n
     ├── entrega3/                Capturas da comunicação UDP
     │   ├── terminal_stm32_udp.png
     │   └── servidor_udp_pc.jpg
-    └── entrega4/                Evidências reais da GUI e relatórios
+    ├── entrega4/                Evidências reais da GUI e relatórios
         ├── INSTRUCOES.md
         ├── entrega4_terminal_stm32.png
         ├── entrega4_interface_monitoramento.png
@@ -71,6 +79,8 @@ O módulo KY-037 capta som por um microfone e disponibiliza um sinal elétrico n
         ├── entrega4_excel_alertas.png
         ├── ky037_log1231.csv
         └── Relatorio_KY037_1231.xlsx
+    └── entrega5/
+        └── interface.gif        Demonstração animada da interface
 ```
 
 O arquivo em `include/` declara cada classe e o arquivo de mesmo nome em `src/` implementa seus métodos. [`DOCUMENTACAO.md`](evidencias/entrega1/DOCUMENTACAO.md) é a página inicial usada pelo Doxygen. O HTML gerado em `docs/html/` e os executáveis compilados não fazem parte dos arquivos versionados.
@@ -313,7 +323,7 @@ não níveis sonoros em decibéis.
 
 Para executar o programa após transferi-lo para a placa:
 
-    cd /home/root
+    cd /root
     chmod +x sensor_som_arm
     ./sensor_som_arm --amostras 100 --intervalo-ms 100
 
@@ -365,7 +375,7 @@ Confira o endereço IPv4 do computador conectado à STM32 (no Windows, `ipconfig
 
 2. **Na STM32MP1-DK1 (transmissor):**
    ```bash
-   cd /home/root
+   cd /root
    chmod +x sensor_som_arm
    ./sensor_som_arm --ip 192.168.42.10 --porta 8080 --amostras 30 --intervalo-ms 100
    ```
@@ -486,6 +496,10 @@ A imagem mostra a sequência de amostras, tempo decorrido e contagens do ADC. **
 
 A captura mostra o receptor ativo na porta **8080**, origem **192.168.42.2**, leituras em tempo real, **5.288 pacotes válidos**, gráfico de **60 s** com **601 amostras**, estatísticas e limite superior **4.400 ADC raw**. O contador representa o acumulado desde a inicialização do receptor e **não** o tamanho do CSV anexado.
 
+**Demonstração animada da interface:**
+
+![Interface KY-037 recebendo leituras e atualizando o gráfico](evidencias/entrega5/interface.gif)
+
 **3. Histórico visual de ultrapassagens e normalizações**
 
 ![Aba de histórico de alertas da interface exibindo eventos reais](evidencias/entrega4/entrega4_interface_alertas.png)
@@ -581,18 +595,24 @@ classDiagram
 
 As classes de C++ da STM32 continuam documentadas com Doxygen. As classes Python usam docstrings, encapsulamento e atualização dos widgets na thread da GUI; a recepção UDP opera separadamente.
 
-## Próxima etapa — Entrega 5
+## Entrega 5 — Demonstração e apresentação
 
-Preparar vídeo de demonstração, apresentação, fluxograma, diagrama de classes, documentação do protocolo, captura da interface e análise dos resultados, conforme o enunciado.
+- [Vídeo de demonstração no Google Drive](https://drive.google.com/file/d/1BVW8qoyFHY4mEYED9KS1cEBujymM_ru7/view?usp=sharing).
+- [Demonstração animada da interface](evidencias/entrega5/interface.gif).
+- O fluxograma, os diagramas de classes, as instruções de compilação e uso, o protocolo, a descrição do sensor, as capturas da interface e a análise das medições estão documentados nas seções anteriores deste README.
+
+A apresentação de slides deve ser entregue junto com o vídeo; não há arquivo de apresentação versionado neste repositório. Confirme o acesso ao link do vídeo antes de informar o commit final no Classroom.
 
 ## Índice da documentação e das evidências
 
 | Etapa | Documentação e evidências disponíveis |
 |---|---|
+| Entrega 0 | [Foto da montagem física durante o ensaio](evidencias/entrega0/conexao_ky037_stm32_energizado.png); ainda é necessária a foto do kit desligado exigida pelo enunciado, caso não tenha sido enviada separadamente ao professor. |
 | Entrega 1 | [Diagrama Doxygen de `SensorSom`](evidencias/entrega1/doxygen_sensor_som.png), [captura dos métodos](evidencias/entrega1/doxygen_metodos.png), [instruções e inventário](evidencias/entrega1/INSTRUCOES.md) e [página inicial do Doxygen](evidencias/entrega1/DOCUMENTACAO.md). |
 | Entrega 2 | [Roteiro de reprodução](evidencias/entrega2/ROTEIRO_ENTREGA2.md), [dados em silêncio](evidencias/entrega2/silencio.csv), [dados com ruído](evidencias/entrega2/ruido.csv), gráficos exibidos acima e [análise detalhada](evidencias/entrega2/ANALISE_ENTREGA2.md). |
 | Entrega 3 | [Captura do terminal da STM32](evidencias/entrega3/terminal_stm32_udp.png) e [captura do terminal receptor no computador](evidencias/entrega3/servidor_udp_pc.jpg), ambos com os programas em funcionamento. |
 | Entrega 4 | [Interface Tkinter](interface_grafica.py), [telemetria e alertas](telemetria_gui.py), [exportador Excel](relatorio_excel.py), [CSV real](evidencias/entrega4/ky037_log1231.csv), [relatório XLSX](evidencias/entrega4/Relatorio_KY037_1231.xlsx), [captura do Tera Term](evidencias/entrega4/entrega4_terminal_stm32.png), [captura da GUI](evidencias/entrega4/entrega4_interface_monitoramento.png) e [histórico de alertas](evidencias/entrega4/entrega4_interface_alertas.png). |
+| Entrega 5 | [Vídeo de demonstração](https://drive.google.com/file/d/1BVW8qoyFHY4mEYED9KS1cEBujymM_ru7/view?usp=sharing), [GIF da interface](evidencias/entrega5/interface.gif) e documentação nesta página. |
 
 Os arquivos `silencio.csv` e `ruido.csv` da Entrega 2 começam com a linha `Fonte ADC: ...` antes do cabeçalho CSV. A documentação completa das classes embarcadas pode ser gerada com `make docs`. As capturas reais da Entrega 4 já foram inseridas acima; é necessário **confirmar sua renderização no GitHub após o push** e conferir que os arquivos foram incluídos no commit.
 

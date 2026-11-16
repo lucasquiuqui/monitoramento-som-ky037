@@ -28,9 +28,9 @@ podem fortalecer a validação.
 
 ## Gráficos
 
-![Comparação completa das 100 leituras](ky037_comparacao_completa.png)
+<p align="center"><img src="ky037_comparacao_completa.png" alt="Comparação completa das 100 leituras"></p>
 
-![Comparação com escala ampliada](ky037_comparacao_ampliada.png)
+<p align="center"><img src="ky037_comparacao_ampliada.png" alt="Comparação com escala ampliada"></p>
 
 ## Dados brutos
 

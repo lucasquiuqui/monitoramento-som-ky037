@@ -226,26 +226,7 @@ SensorSom
 
 ### Fluxograma da aplicação
 
-```mermaid
-flowchart TD
-    A[Iniciar e interpretar argumentos] --> B{Argumentos válidos?}
-    B -- Não --> C[Exibir erro ou ajuda e encerrar]
-    B -- Sim --> D[Criar SensorSom e MonitoramentoSom]
-    D --> E{IP e porta informados?}
-    E -- Sim --> F[Criar ClienteUDP e ProtocoloSom]
-    E -- Não --> G[Ler arquivo IIO]
-    F --> G
-    G --> H{Leitura válida?}
-    H -- Não --> I[Exibir erro e encerrar]
-    H -- Sim --> J[Exibir amostra, tempo e valor]
-    J --> K{UDP ativo?}
-    K -- Sim --> L[Empacotar e enviar datagrama]
-    K -- Não --> M{Restam amostras?}
-    L --> M
-    M -- Sim --> N[Aguardar próximo intervalo]
-    N --> G
-    M -- Não --> O[Encerrar]
-```
+<p align="center"><img src="imagens/fluxo-aplicacao.svg" alt="Fluxo de execução da aplicação C++ na STM32MP1"></p>
 
 Em `--continuo`, a coleta segue até o processo ser interrompido. Se o envio UDP falhar, a aplicação mostra `[Aviso UDP]` e continua a aquisição.
 

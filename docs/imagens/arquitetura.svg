@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 890 398" role="img" aria-labelledby="titulo descricao">
+  <title id="titulo">Arquitetura do monitoramento acústico</title>
+  <desc id="descricao">O sensor KY-037 envia o sinal analógico ao ADC A4 da STM32MP1. Uma aplicação C++17 lê o ADC pelo Linux IIO, transmite datagramas UDP e a aplicação Python com Tkinter apresenta gráfico, alertas e exportações.</desc>
+  <defs>
+    <marker id="seta" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="strokeWidth">
+      <path d="M0 0 L8 4 L0 8 Z" fill="#637184"/>
+    </marker>
+    <style>
+      text{font-family:Arial,Helvetica,sans-serif;fill:#273143}
+      .titulo{font-size:20px;font-weight:700}
+      .corpo{font-size:16px;fill:#405064}
+      .numero{font-size:16px;font-weight:700;fill:white;text-anchor:middle}
+      .seta{fill:none;stroke:#637184;stroke-width:2;marker-end:url(#seta)}
+      .legenda{font-size:14px;fill:#748296}
+    </style>
+  </defs>
+
+  <path class="seta" d="M267 88 H317"/>
+  <path class="seta" d="M568 88 H618"/>
+  <path class="seta" d="M746 141 V190"/>
+  <path class="seta" d="M622 248 H572"/>
+  <path class="seta" d="M321 248 H271"/>
+
+  <rect x="20" y="35" width="247" height="106" rx="12" fill="#f3e5d0" stroke="#e39126" stroke-width="2"/>
+  <circle cx="49" cy="66" r="16" fill="#d98922"/><text class="numero" x="49" y="72">1</text>
+  <text class="titulo" x="74" y="74">Sensor KY-037</text>
+  <text class="corpo" x="40" y="105">Microfone com saída</text><text class="corpo" x="40" y="127">analógica (AO)</text>
+
+  <rect x="321" y="35" width="247" height="106" rx="12" fill="#d8e5dc" stroke="#2da66e" stroke-width="2"/>
+  <circle cx="350" cy="66" r="16" fill="#209166"/><text class="numero" x="350" y="72">2</text>
+  <text class="titulo" x="375" y="74">ADC A4</text>
+  <text class="corpo" x="341" y="105">Conversão do sinal na</text><text class="corpo" x="341" y="127">STM32MP1-DK1</text>
+
+  <rect x="622" y="35" width="247" height="106" rx="12" fill="#d8e5dc" stroke="#2da66e" stroke-width="2"/>
+  <circle cx="651" cy="66" r="16" fill="#209166"/><text class="numero" x="651" y="72">3</text>
+  <text class="titulo" x="676" y="74">Leitura em C++17</text>
+  <text class="corpo" x="642" y="105">Linux, interface</text><text class="corpo" x="642" y="127">IIO/sysfs</text>
+
+  <rect x="622" y="195" width="247" height="106" rx="12" fill="#e4deef" stroke="#8d68df" stroke-width="2"/>
+  <circle cx="651" cy="226" r="16" fill="#7952c9"/><text class="numero" x="651" y="232">4</text>
+  <text class="titulo" x="676" y="234">Envio por UDP</text>
+  <text class="corpo" x="642" y="265">Datagramas em JSON</text><text class="corpo" x="642" y="287">ou CSV</text>
+
+  <rect x="321" y="195" width="247" height="106" rx="12" fill="#d9e5f1" stroke="#4c8ce5" stroke-width="2"/>
+  <circle cx="350" cy="226" r="16" fill="#3977cc"/><text class="numero" x="350" y="232">5</text>
+  <text class="titulo" x="375" y="234">Aplicação no PC</text>
+  <text class="corpo" x="341" y="265">Python com Tkinter</text>
+
+  <rect x="20" y="195" width="247" height="106" rx="12" fill="#d9e5f1" stroke="#4c8ce5" stroke-width="2"/>
+  <circle cx="49" cy="226" r="16" fill="#3977cc"/><text class="numero" x="49" y="232">6</text>
+  <text class="titulo" x="74" y="234">Resultados</text>
+  <text class="corpo" x="40" y="265">Gráfico e alertas;</text><text class="corpo" x="40" y="287">exporta CSV e Excel</text>
+
+  <rect x="20" y="334" width="16" height="16" rx="3" fill="#f3e5d0" stroke="#e39126" stroke-width="2"/>
+  <text class="legenda" x="43" y="348">Sensor</text>
+  <rect x="134" y="334" width="16" height="16" rx="3" fill="#d8e5dc" stroke="#2da66e" stroke-width="2"/>
+  <text class="legenda" x="157" y="348">Placa STM32MP1-DK1</text>
+  <rect x="356" y="334" width="16" height="16" rx="3" fill="#e4deef" stroke="#8d68df" stroke-width="2"/>
+  <text class="legenda" x="379" y="348">Rede</text>
+  <rect x="447" y="334" width="16" height="16" rx="3" fill="#d9e5f1" stroke="#4c8ce5" stroke-width="2"/>
+  <text class="legenda" x="470" y="348">PC</text>
+</svg>

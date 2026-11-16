@@ -18,7 +18,7 @@ Consulte a foto da montagem usada no ensaio e a observação sobre a foto exigid
 
 ### Foto da montagem
 
-<a href="../evidencias/entrega0/conexao_ky037_stm32_energizado.png"><img src="../evidencias/entrega0/conexao_ky037_stm32_energizado.png" alt="Sensor KY-037 conectado à placa STM32MP1-DK1 durante o ensaio" width="380"></a>
+<p align="center"><a href="../evidencias/entrega0/conexao_ky037_stm32_energizado.png"><img src="../evidencias/entrega0/conexao_ky037_stm32_energizado.png" alt="Sensor KY-037 conectado à placa STM32MP1-DK1 durante o ensaio" width="380"></a></p>
 
 A foto mostra o conjunto **energizado**. Ela documenta a montagem usada no ensaio, mas não substitui a foto com o kit **desligado** exigida antes dos testes pelo enunciado. Nessa montagem, `+` vai a 3,3 V, `G` a GND e `AO` a A4; a saída `DO` fica livre.
 
@@ -63,11 +63,11 @@ gerada no Ubuntu.
 
 **Diagrama UML da classe SensorSom:**
 
-<a href="../evidencias/entrega1/doxygen_sensor_som.png"><img src="../evidencias/entrega1/doxygen_sensor_som.png" alt="Diagrama UML da classe SensorSom" width="420"></a>
+<p align="center"><a href="../evidencias/entrega1/doxygen_sensor_som.png"><img src="../evidencias/entrega1/doxygen_sensor_som.png" alt="Diagrama UML da classe SensorSom" width="420"></a></p>
 
 **Documentação dos métodos:**
 
-<a href="../evidencias/entrega1/doxygen_metodos.png"><img src="../evidencias/entrega1/doxygen_metodos.png" alt="Documentação dos métodos da classe SensorSom" width="420"></a>
+<p align="center"><a href="../evidencias/entrega1/doxygen_metodos.png"><img src="../evidencias/entrega1/doxygen_metodos.png" alt="Documentação dos métodos da classe SensorSom" width="420"></a></p>
 
 A documentação HTML completa pode ser gerada com
 `doxygen Doxyfile`. A pasta `docs/html/` não é
@@ -105,9 +105,9 @@ não níveis sonoros em decibéis.
 
 ### Evidências
 
-<a href="../evidencias/entrega2/ky037_comparacao_completa.png"><img src="../evidencias/entrega2/ky037_comparacao_completa.png" alt="Gráfico das medições" width="640"></a>
+<p align="center"><a href="../evidencias/entrega2/ky037_comparacao_completa.png"><img src="../evidencias/entrega2/ky037_comparacao_completa.png" alt="Gráfico das medições" width="640"></a></p>
 
-<a href="../evidencias/entrega2/ky037_comparacao_ampliada.png"><img src="../evidencias/entrega2/ky037_comparacao_ampliada.png" alt="Gráfico ampliado" width="640"></a>
+<p align="center"><a href="../evidencias/entrega2/ky037_comparacao_ampliada.png"><img src="../evidencias/entrega2/ky037_comparacao_ampliada.png" alt="Gráfico ampliado" width="640"></a></p>
 
 [Análise detalhada](../evidencias/entrega2/ANALISE_ENTREGA2.md) · [Roteiro para reproduzir a aquisição](../evidencias/entrega2/ROTEIRO_ENTREGA2.md)
 
@@ -203,11 +203,11 @@ Os testes foram realizados conectando a STM32MP1-DK1 (`192.168.42.2`) ao computa
 
 **1. Execução no terminal da STM32MP1-DK1 (TeraTerm via Serial):**
 
-<a href="../evidencias/entrega3/terminal_stm32_udp.png"><img src="../evidencias/entrega3/terminal_stm32_udp.png" alt="Execução na STM32" width="640"></a>
+<p align="center"><a href="../evidencias/entrega3/terminal_stm32_udp.png"><img src="../evidencias/entrega3/terminal_stm32_udp.png" alt="Execução na STM32" width="640"></a></p>
 
 **2. Recepção em tempo real no servidor central (PC:)**
 
-<a href="../evidencias/entrega3/servidor_udp_pc.jpg"><img src="../evidencias/entrega3/servidor_udp_pc.jpg" alt="Servidor Receptor UDP no PC" width="640"></a>
+<p align="center"><a href="../evidencias/entrega3/servidor_udp_pc.jpg"><img src="../evidencias/entrega3/servidor_udp_pc.jpg" alt="Servidor Receptor UDP no PC" width="640"></a></p>
 
 Na execução documentada, o servidor recebeu 30 mensagens enviadas pela STM32. O UDP não garante a entrega de todos os pacotes em qualquer condição de rede.
 
@@ -313,29 +313,29 @@ O relatório [`Relatorio_KY037_1231.xlsx`](../evidencias/entrega4/Relatorio_KY03
 
 **1. Aquisição na STM32 — terminal serial (Tera Term)**
 
-<a href="../evidencias/entrega4/entrega4_terminal_stm32.png"><img src="../evidencias/entrega4/entrega4_terminal_stm32.png" alt="Terminal do Linux na STM32 mostrando amostras reais do KY-037" width="640"></a>
+<p align="center"><a href="../evidencias/entrega4/entrega4_terminal_stm32.png"><img src="../evidencias/entrega4/entrega4_terminal_stm32.png" alt="Terminal do Linux na STM32 mostrando amostras reais do KY-037" width="640"></a></p>
 
 A imagem mostra a sequência de amostras, tempo decorrido e contagens do ADC. **O comando completo com endereço IP e porta UDP não aparece nesta captura**; a comunicação é corroborada pela GUI recebendo pacotes da placa e pelas evidências da Entrega 3.
 
 **2. GUI do PC recebendo UDP e desenhando o gráfico temporal**
 
-<a href="../evidencias/entrega4/entrega4_interface_monitoramento.png"><img src="../evidencias/entrega4/entrega4_interface_monitoramento.png" alt="Interface de monitoramento recebendo leituras reais do KY-037 por UDP" width="640"></a>
+<p align="center"><a href="../evidencias/entrega4/entrega4_interface_monitoramento.png"><img src="../evidencias/entrega4/entrega4_interface_monitoramento.png" alt="Interface de monitoramento recebendo leituras reais do KY-037 por UDP" width="640"></a></p>
 
 A captura mostra o receptor ativo na porta **8080**, origem **192.168.42.2**, leituras em tempo real, **5.288 pacotes válidos**, gráfico de **60 s** com **601 amostras**, estatísticas e limite superior **4.400 ADC raw**. O contador representa o acumulado desde a inicialização do receptor e **não** o tamanho do CSV anexado.
 
 **3. Histórico visual de ultrapassagens e normalizações**
 
-<a href="../evidencias/entrega4/entrega4_interface_alertas.png"><img src="../evidencias/entrega4/entrega4_interface_alertas.png" alt="Aba de histórico de alertas da interface exibindo eventos reais" width="640"></a>
+<p align="center"><a href="../evidencias/entrega4/entrega4_interface_alertas.png"><img src="../evidencias/entrega4/entrega4_interface_alertas.png" alt="Aba de histórico de alertas da interface exibindo eventos reais" width="640"></a></p>
 
 A imagem apresenta eventos `ACIMA` e `NORMALIZADO`, incluindo valores **4.846**, **5.504**, **3.728** e **4.249 ADC raw**, com limite superior **4.400**. A lista visual pertence à sessão em curso e não substitui o arquivo histórico persistente.
 
 **4. Gráfico da gravação exportado para Excel**
 
-<a href="../evidencias/entrega4/entrega4_excel_grafico.png"><img src="../evidencias/entrega4/entrega4_excel_grafico.png" alt="Gráfico real no Microsoft Excel a partir do relatório KY-037" width="640"></a>
+<p align="center"><a href="../evidencias/entrega4/entrega4_excel_grafico.png"><img src="../evidencias/entrega4/entrega4_excel_grafico.png" alt="Gráfico real no Microsoft Excel a partir do relatório KY-037" width="640"></a></p>
 
 **5. Alertas registrados no relatório Excel**
 
-<a href="../evidencias/entrega4/entrega4_excel_alertas.png"><img src="../evidencias/entrega4/entrega4_excel_alertas.png" alt="Histórico de alertas no relatório Excel KY-037" width="640"></a>
+<p align="center"><a href="../evidencias/entrega4/entrega4_excel_alertas.png"><img src="../evidencias/entrega4/entrega4_excel_alertas.png" alt="Histórico de alertas no relatório Excel KY-037" width="640"></a></p>
 
 **Arquivos de dados e instruções:** [CSV com 357 leituras](../evidencias/entrega4/ky037_log1231.csv) · [Relatório Excel com gráfico e histórico](../evidencias/entrega4/Relatorio_KY037_1231.xlsx) · [Procedimento e inventário das evidências](../evidencias/entrega4/INSTRUCOES.md).
 

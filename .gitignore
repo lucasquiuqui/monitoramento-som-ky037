@@ -4,8 +4,8 @@ sensor_som_arm
 teste_sensor_som
 *.o
 
-# Documentacao gerada pelo Doxygen (opcional gerar de novo)
-docs/
+# Saida gerada pelo Doxygen; os arquivos Markdown em docs/ sao versionados
+/docs/html/
 
 # Arquivos temporarios e de IDE
 *.swp

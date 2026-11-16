@@ -39,5 +39,5 @@
 - Os valores são contagens ADC brutas, **não dB**; limite experimental não comprova violação da carga.
 - UDP não assegura entrega. O gráfico usa relógio do PC; o timestamp da placa pode estar desajustado.
 - As opções de 5/10/30 minutos são suportadas e testadas por software, mas o conjunto de evidências anexadas não demonstra uma coleta física ininterrupta de 30 minutos.
-- As cinco imagens devem estar **embutidas no README.md** com caminhos relativos e publicadas no mesmo commit que o README.
+- Na entrega acadêmica original, as capturas deveriam constar no README. Nesta organização de portfólio, as cinco imagens estão no [histórico das entregas](../../docs/historico-entregas.md), com caminhos relativos; o README principal exibe uma seleção.
 - O arquivo `alertas_ky037.csv` original pode conter histórico de várias sessões e não deve ser alterado apenas para gerar evidências.

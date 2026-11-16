@@ -4,7 +4,7 @@ Este roteiro descreve a aquisição no computador e na STM32. Os resultados já 
 
 ## 1. Compilar e testar no computador
 
-Na raiz do repositório, execute `make test`. Para gerar o binário da placa, use `make arm ARM_CXX=CAMINHO_DO_COMPILADOR`, apontando para o compilador do SDK Buildroot. O [README](../../README.md#compilação-cruzada-para-stm32) traz um exemplo completo. Confira a arquitetura com `file sensor_som_arm`.
+Na raiz do repositório, execute `make test`. Para gerar o binário da placa, use `make arm ARM_CXX=CAMINHO_DO_COMPILADOR`, apontando para o compilador do SDK Buildroot. O [guia técnico](../../docs/guia-tecnico.md#compilacao-stm32) traz um exemplo completo. Confira a arquitetura com `file sensor_som_arm`.
 
 ## 2. Preparar a montagem
 

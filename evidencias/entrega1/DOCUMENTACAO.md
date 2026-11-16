@@ -18,7 +18,7 @@ Os estados internos ficam protegidos por atributos privados. Não existem variá
 
 Canal identificado: `/sys/bus/iio/devices/iio:device0/in_voltage13_raw` (A4). O programa aceita tanto este arquivo quanto dados simulados para testes no Ubuntu.
 
-No kit, executar `./sensor_som_arm --amostras 30 --intervalo-ms 100`, ou usar `--continuo` para interromper com Ctrl+C. As medições reais e a análise estão em `evidencias/entrega2/`. Com `--ip` e `--porta`, cada leitura também é transmitida por UDP; as capturas da placa e do receptor estão em `evidencias/entrega3/`. O `README.md` na raiz reúne as instruções de uso e os diagramas.
+No kit, executar `./sensor_som_arm --amostras 30 --intervalo-ms 100`, ou usar `--continuo` para interromper com Ctrl+C. As medições reais e a análise estão em `evidencias/entrega2/`. Com `--ip` e `--porta`, cada leitura também é transmitida por UDP; as capturas da placa e do receptor estão em `evidencias/entrega3/`. O `README.md` na raiz resume o uso; os diagramas de classes e instruções detalhadas estão em `docs/guia-tecnico.md`.
 
 ## Gerar a documentação
 
@@ -30,4 +30,4 @@ Abrir `docs/html/index.html`. Diagramas dependem do Graphviz (`dot`).
 
 ## Limites
 
-O acesso pelo sysfs não garante uma frequência de amostragem adequada para reconstruir áudio. A intensidade sonora em dB não é calculada. A interface gráfica ainda não foi implementada.
+O acesso pelo sysfs não garante uma frequência de amostragem adequada para reconstruir áudio. A intensidade sonora em dB não é calculada. A interface gráfica atual é executada no computador, separadamente da aplicação embarcada.

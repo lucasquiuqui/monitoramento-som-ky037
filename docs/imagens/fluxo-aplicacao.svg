@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 450" role="img" aria-labelledby="titulo descricao">
+  <title id="titulo">Fluxo de execução da aplicação embarcada</title>
+  <desc id="descricao">A aplicação interpreta e valida os argumentos, cria os componentes, configura UDP se solicitado, lê e valida o ADC pelo Linux IIO, exibe e opcionalmente envia a amostra e repete até atingir o total ou receber interrupção. Erros de argumentos ou leitura encerram o processo.</desc>
+  <defs>
+    <marker id="seta" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="strokeWidth"><path d="M0 0 L8 4 L0 8 Z" fill="#637184"/></marker>
+    <style>
+      text{font-family:Arial,Helvetica,sans-serif;fill:#273143}
+      .titulo{font-size:19px;font-weight:700}
+      .corpo{font-size:15px;fill:#405064}
+      .numero{font-size:16px;font-weight:700;fill:white;text-anchor:middle}
+      .seta{fill:none;stroke:#637184;stroke-width:2;marker-end:url(#seta)}
+      .nota{font-size:14px;fill:#748296}
+    </style>
+  </defs>
+
+  <path class="seta" d="M275 91 H317"/>
+  <path class="seta" d="M571 91 H613"/>
+  <path class="seta" d="M741 145 V192"/>
+  <path class="seta" d="M613 250 H571"/>
+  <path class="seta" d="M317 250 H275"/>
+
+  <rect x="20" y="38" width="255" height="107" rx="12" fill="#f3e5d0" stroke="#e39126" stroke-width="2"/>
+  <circle cx="49" cy="69" r="16" fill="#d98922"/><text class="numero" x="49" y="75">1</text>
+  <text class="titulo" x="74" y="77">Argumentos</text>
+  <text class="corpo" x="40" y="108">Interpretar e validar opções</text>
+  <text class="corpo" x="40" y="130">da linha de comando</text>
+
+  <rect x="317" y="38" width="254" height="107" rx="12" fill="#d8e5dc" stroke="#2da66e" stroke-width="2"/>
+  <circle cx="346" cy="69" r="16" fill="#209166"/><text class="numero" x="346" y="75">2</text>
+  <text class="titulo" x="371" y="77">Inicialização</text>
+  <text class="corpo" x="337" y="108">Criar SensorSom e</text>
+  <text class="corpo" x="337" y="130">MonitoramentoSom</text>
+
+  <rect x="613" y="38" width="267" height="107" rx="12" fill="#e4deef" stroke="#8d68df" stroke-width="2"/>
+  <circle cx="642" cy="69" r="16" fill="#7952c9"/><text class="numero" x="642" y="75">3</text>
+  <text class="titulo" x="667" y="77">UDP opcional</text>
+  <text class="corpo" x="633" y="108">Preparar protocolo e socket</text>
+  <text class="corpo" x="633" y="130">se IP e porta forem dados</text>
+
+  <rect x="613" y="197" width="267" height="107" rx="12" fill="#d8e5dc" stroke="#2da66e" stroke-width="2"/>
+  <circle cx="642" cy="228" r="16" fill="#209166"/><text class="numero" x="642" y="234">4</text>
+  <text class="titulo" x="667" y="236">Aquisição</text>
+  <text class="corpo" x="633" y="267">Ler e validar o valor bruto</text>
+  <text class="corpo" x="633" y="289">do ADC via Linux IIO</text>
+
+  <rect x="317" y="197" width="254" height="107" rx="12" fill="#d9e5f1" stroke="#4c8ce5" stroke-width="2"/>
+  <circle cx="346" cy="228" r="16" fill="#3977cc"/><text class="numero" x="346" y="234">5</text>
+  <text class="titulo" x="371" y="236">Saída</text>
+  <text class="corpo" x="337" y="267">Exibir amostra e enviar</text>
+  <text class="corpo" x="337" y="289">datagrama se UDP ativo</text>
+
+  <rect x="20" y="197" width="255" height="107" rx="12" fill="#d9e5f1" stroke="#4c8ce5" stroke-width="2"/>
+  <circle cx="49" cy="228" r="16" fill="#3977cc"/><text class="numero" x="49" y="234">6</text>
+  <text class="titulo" x="74" y="236">Próxima leitura</text>
+  <text class="corpo" x="40" y="267">Aguardar o intervalo e</text>
+  <text class="corpo" x="40" y="289">repetir ou encerrar</text>
+
+  <path class="seta" d="M147 304 V353 H741 V311"/>
+  <text class="nota" x="355" y="347">enquanto restarem amostras</text>
+  <text class="nota" x="20" y="402">Argumento ou leitura inválida: exibe erro e encerra. Em modo contínuo: repete até Ctrl+C.</text>
+  <text class="nota" x="20" y="426">Falha no envio UDP: emite aviso e continua a aquisição.</text>
+</svg>

@@ -1,23 +1,16 @@
 # Sistema de Monitoramento Acústico com STM32MP1 e Telemetria UDP
 
-![STM32MP1](https://img.shields.io/badge/STM32-MP1-03234B) ![C++17](https://img.shields.io/badge/C%2B%2B-17-00599C) ![Python 3](https://img.shields.io/badge/Python-3-3776AB) ![Linux IIO](https://img.shields.io/badge/Linux-IIO-333333) ![UDP](https://img.shields.io/badge/Telemetria-UDP-0A7A5A) ![Tkinter](https://img.shields.io/badge/Interface-Tkinter-6A4C93)
+<p align="center"><img src="https://img.shields.io/badge/STM32-MP1-03234B" alt="STM32MP1"> <img src="https://img.shields.io/badge/C%2B%2B-17-00599C" alt="C++17"> <img src="https://img.shields.io/badge/Python-3-3776AB" alt="Python 3"> <img src="https://img.shields.io/badge/Linux-IIO-333333" alt="Linux IIO"> <img src="https://img.shields.io/badge/Telemetria-UDP-0A7A5A" alt="UDP"> <img src="https://img.shields.io/badge/Interface-Tkinter-6A4C93" alt="Tkinter"></p>
 
 O KY-037 é lido pela STM32MP1-DK1 em Linux. Uma aplicação C++ envia as contagens do ADC por UDP para uma interface Python/Tkinter no computador, que exibe o histórico, sinaliza leituras fora dos limites configurados e exporta os dados. O sistema foi demonstrado com o sensor e a placa reais.
 
-<a href="evidencias/entrega5/interface.gif"><img src="evidencias/entrega5/interface.gif" alt="Interface recebendo leituras do KY-037 e atualizando o gráfico" width="680"></a>
+<p align="center"><a href="evidencias/entrega5/interface.gif"><img src="evidencias/entrega5/interface.gif" alt="Interface recebendo leituras do KY-037 e atualizando o gráfico" width="780"></a></p>
 
 [Vídeo da demonstração](https://drive.google.com/file/d/1BVW8qoyFHY4mEYED9KS1cEBujymM_ru7/view?usp=sharing) · [Guia técnico completo](docs/guia-tecnico.md) · [Histórico e evidências das entregas](docs/historico-entregas.md)
 
 ## Arquitetura
 
-```mermaid
-flowchart LR
-    A["KY-037<br/>saída analógica AO"] --> B["ADC A4<br/>STM32MP1-DK1"]
-    B --> C["C++17 em Linux<br/>IIO/sysfs"]
-    C --> D["Datagramas UDP<br/>JSON ou CSV"]
-    D --> E["Python/Tkinter<br/>PC"]
-    E --> F["Gráfico, alertas<br/>CSV e Excel"]
-```
+<p align="center"><img src="docs/imagens/arquitetura.svg" alt="Fluxo do sensor KY-037 até os resultados na interface do PC" width="680"></p>
 
 | Componente | Responsabilidade |
 |---|---|
@@ -83,9 +76,9 @@ O [relatório Excel da sessão](evidencias/entrega4/Relatorio_KY037_1231.xlsx) m
 
 As capturas da interface e o CSV podem representar sessões diferentes. Os contadores mostrados na imagem não são a quantidade de linhas do arquivo.
 
-<a href="evidencias/entrega4/entrega4_interface_monitoramento.png"><img src="evidencias/entrega4/entrega4_interface_monitoramento.png" alt="Interface recebendo leituras reais por UDP" width="640"></a>
+<p align="center"><a href="evidencias/entrega4/entrega4_interface_monitoramento.png"><img src="evidencias/entrega4/entrega4_interface_monitoramento.png" alt="Interface recebendo leituras reais por UDP" width="640"></a></p>
 
-<a href="evidencias/entrega4/entrega4_interface_alertas.png"><img src="evidencias/entrega4/entrega4_interface_alertas.png" alt="Histórico de alertas da interface" width="640"></a>
+<p align="center"><a href="evidencias/entrega4/entrega4_interface_alertas.png"><img src="evidencias/entrega4/entrega4_interface_alertas.png" alt="Histórico de alertas da interface" width="640"></a></p>
 
 ## Decisões de engenharia
 
@@ -192,14 +185,8 @@ O formato CSV alternativo usa a ordem `sensor,valor,unidade,timestamp`, sem cabe
 
 Execute `make docs` para gerar `docs/html/index.html` com Doxygen e Graphviz. A saída HTML gerada não é versionada.
 
-## Equipe e licença
+## Autoria e licença
 
-As contribuições abaixo refletem o histórico de commits; elas não pretendem esgotar o trabalho colaborativo do grupo.
+Integrantes: **Quiuqui** (`lucasquiuqui`), **Nóbrega** (`brennoln`) e **Miranda** (`fnmiranda`). Consulte o [histórico de commits](https://github.com/lucasquiuqui/monitoramento-som-ky037/commits) para acompanhar a colaboração.
 
-| Integrante | Contribuições registradas |
-|---|---|
-| **Quiuqui** (`lucasquiuqui`) | Classe do sensor, medições na STM32, interface gráfica, alertas, relatório Excel e evidências. |
-| **Nóbrega** (`brennoln`) | Envio UDP, protocolo de telemetria, receptor em terminal e documentação dessa integração. |
-| **Miranda** (`fnmiranda`) | Organização do repositório, testes, README e organização das evidências e demonstrações. |
-
-[Histórico de commits](https://github.com/lucasquiuqui/monitoramento-som-ky037/commits) · **Licença:** o repositório não contém um arquivo de licença; nenhuma foi adicionada nesta revisão.
+**Licença:** o repositório não contém um arquivo de licença.

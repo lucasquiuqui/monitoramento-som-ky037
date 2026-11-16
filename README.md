@@ -24,32 +24,15 @@ Comece por estas seções para entender o sensor, a organização do código e c
 
 ## Sumário dos entregáveis
 
-Abra o [histórico recolhível](#historico-entregas) antes de usar os atalhos internos de cada entrega.
+O histórico começa aberto para que os links levem diretamente a cada entrega. Use o título do bloco para recolhê-lo quando desejar.
 
 - [Histórico das entregas e evidências](#historico-entregas)
   - [Entrega 0 — Conexão física](#entrega-0)
-    - [Foto da montagem](#entrega-0-foto)
   - [Entrega 1 — Classe e Doxygen](#entrega-1)
-    - [Geração da documentação](#entrega-1-geracao)
-    - [Evidências da documentação](#entrega-1-evidencias)
   - [Entrega 2 — Resultados experimentais](#entrega-2)
-    - [Comparação das medições](#entrega-2-medicoes)
-    - [Gráficos e dados](#entrega-2-evidencias)
-    - [Execução na STM32](#entrega-2-execucao)
   - [Entrega 3 — Comunicação UDP](#entrega-3)
-    - [Arquitetura](#entrega-3-arquitetura)
-    - [Protocolo](#entrega-3-protocolo)
-      - [JSON](#entrega-3-json) · [CSV](#entrega-3-csv)
-    - [Execução](#entrega-3-execucao)
-    - [Capturas da transmissão](#entrega-3-evidencias)
   - [Entrega 4 — Interface gráfica](#entrega-4)
-    - [Resultado](#entrega-4-resultado) · [Funcionalidades](#entrega-4-funcionalidades)
-    - [Execução](#entrega-4-execucao) · [Arquivos CSV e Excel](#entrega-4-arquivos)
-    - [Medições](#entrega-4-medicoes) · [Capturas](#entrega-4-evidencias)
-    - [Testes](#entrega-4-testes)
   - [Entrega 5 — Demonstração](#entrega-5)
-    - [Vídeo e GIF](#entrega-5-video-gif)
-  - [Índice das evidências](#indice-evidencias)
 
 <a id="objetivo"></a>
 
@@ -526,7 +509,7 @@ A aquisição perto de 10 Hz não reconstrói a forma de onda do áudio e pode d
 
 As seções seguintes organizam as evidências por etapa. A descrição do sistema, o protocolo, as instruções de uso e os resultados estão nas seções gerais acima. Clique em uma imagem para abri-la no tamanho original.
 
-<details>
+<details open>
 <summary>Ver todas as entregas e evidências</summary>
 
 <a id="entrega-0"></a>
